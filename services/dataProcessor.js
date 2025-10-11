@@ -39,7 +39,7 @@ function processLocalData(local) {
     compressedActive : new MostActiveContractONE(mostActiveData,timestamp)
   };
 
-  debugger
+  // debugger
   return items;
 }
 
