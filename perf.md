@@ -1,7 +1,7 @@
 | Phase / Metric                     | 🕓 Before                               | ⚡ After                              |
 |------------------------------------|------------------------------------------|---------------------------------------|
 | 🌐 **Browser Initiated**            | 2.122 s                                  | 0.016 ms                              |
-| ❌ **Cache Status**                 | Cache Miss                               | ✅ Cache Hit                           |
+| 🌐 **Cache Status**                 | ❌ Cache Miss                               | ✅ Cache Hit                           |
 | 🌐 **Cached Expiry**                | 3.206 s                                  | 0.053 ms                              |
 | 🌐 **Data Processing**              | 965.028 ms                               | 162.526 ms                            |
 | ⚡ **DynamoDB Clients Created**     | 30                                       | —                                     |
@@ -14,3 +14,4 @@
 | 💰 **Billed Duration**              | 7155 ms                                 | 325 ms                                |
 | 🧠 **Memory Size**                  | 2560 MB                                 | 2560 MB                               |
 | 📈 **Max Memory Used**              | 631 MB                                  | 638 MB                                |
+
