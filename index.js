@@ -1,7 +1,7 @@
-const { PAGE_URL_1, PAGE_URL_2, GET_API_1, GET_API_2 } = require("./constants");
 const { runCLI, getBrowser, insertAllData, handleExpiryCache, processFetchedData } = require('./header');
+const { PAGE_URL_1, PAGE_URL_2,PAGE_ACTIVE_URL_1,PAGE_ACTIVE_URL_2,GET_API_1, GET_API_2,GET_API_ACTIVE_1,GET_API_ACTIVE_2,EXCHANGE,EXCHANGE2, GET_API_FUTURE_2,DYNAMO_DB_TABLE_1,DYNAMO_DB_TABLE_2} = require("./constants");
 
-let globalBrowser = null, cachedExpiry = null;
+let globalBrowser = null, globalBrowser2 = null, cachedExpiry = null, cachedExpiry2 = null;
 
 async function main() {
   try {
@@ -10,24 +10,34 @@ async function main() {
     if (!globalBrowser || !globalBrowser.isConnected()) {
       globalBrowser = await getBrowser();
     }
+    if (!globalBrowser2 || !globalBrowser2.isConnected()) {
+      globalBrowser2 = await getBrowser();
+    }
     console.timeEnd("🌐 Browser Initiated");
 
     // ✅ Handle expiry caching (memoization)
-    console.time("🌐 cached expiry");
-    cachedExpiry = await handleExpiryCache(globalBrowser, cachedExpiry, PAGE_URL_1, GET_API_1);
-    console.timeEnd("🌐 cached expiry");
+    console.time("🌐 cached expiry | Data process 1");
+    cachedExpiry = await handleExpiryCache(globalBrowser, cachedExpiry, PAGE_URL_1, GET_API_1, EXCHANGE);
+    cachedExpiry2 = await handleExpiryCache(globalBrowser2, cachedExpiry2, PAGE_URL_2, GET_API_2, EXCHANGE2);
+    console.timeEnd("🌐 cached expiry | Data process 1");
     
     // ✅ Process all data (fetch + transform)
-    console.time("🌐 Data process");
-    const processedData = await processFetchedData(globalBrowser, PAGE_URL_1, PAGE_URL_2, cachedExpiry, GET_API_2);
-    console.timeEnd("🌐 Data process");
+    console.time("🌐 cached expiry | Data process 2");
+    const processedData = await processFetchedData(globalBrowser, PAGE_URL_1, PAGE_ACTIVE_URL_1, cachedExpiry, GET_API_ACTIVE_1,EXCHANGE,GET_API_FUTURE_2);
+    const processedData2 = await processFetchedData(globalBrowser2, PAGE_URL_2, PAGE_ACTIVE_URL_2, cachedExpiry2, GET_API_ACTIVE_2,EXCHANGE2,GET_API_FUTURE_2);
+    console.timeEnd("🌐 cached expiry | Data process 2");
     
+    debugger;
     // ✅ Insert everything into DynamoDB
     console.time("🌐 insertion");
-    await insertAllData(processedData);
+    // debugger
+    Promise.all(
+      await insertAllData(processedData,DYNAMO_DB_TABLE_1),
+      await insertAllData(processedData2,DYNAMO_DB_TABLE_2)
+    );
     console.timeEnd("🌐 insertion");
-    
     // debugger;
+    
 
     return { status: 200 };
   } 

@@ -1,4 +1,4 @@
-const { TTL } = require('../constants');
+const { TTL } = require('../../constants');
 
 class OptionData {
   constructor(data) {

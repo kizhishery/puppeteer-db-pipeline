@@ -45,7 +45,7 @@ const fetchApi = async (apiURL) => {
 };
 
 // --- Main function ---
-const fetchData = async (browser, pageURL, apiURL, useCookies = true) => {
+const fetchData = async (browser, pageURL, apiURL, useCookies) => {
   if (!browser || !browser.isConnected()) throw new Error("Browser instance required");
   if (!pageURL || !apiURL) throw new Error("Missing pageURL or apiURL");
 

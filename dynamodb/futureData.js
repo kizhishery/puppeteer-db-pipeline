@@ -1,26 +1,27 @@
-const { INSERT } = require('../constants');
+const { INSERT } = require("../constants");
 const { insertItem } = require("./utils/header");
-const insertFutureData = async (data) => {
+
+const insertFutureData = async (data, TABLE) => {
   try {
     if (!data) {
-      console.error("❌ Required field missing or malformed in input for strike data");
+      console.error(
+        "❌ Required field missing or malformed in input for strike data"
+      );
       return;
     }
-    
-    const startTime = Date.now()
+    if (!INSERT) {
+      console.log(`🏭 Disabled insert for testing purpose | INSERT=''`);
+      return;
+    }
 
-    const item = data.getData();  
-    await insertItem(item);
-    
+    const startTime = Date.now();
+
+    const item = data.getData();
+    await insertItem(item, TABLE);
+
     const elapsed = Date.now() - startTime; // calculate elapsed time
 
-    if(INSERT) {
-      console.log(`✅ Inserted future parallel (${elapsed} ms)`);
-      return;
-    }
-
-    console.log(`🏭 Disabled insert for testing purpose | INSERT=''`);
-    
+    console.log(`✅ Inserted future parallel (${elapsed} ms)`);
   } catch (err) {
     console.error("❌ Error processing future data:", err);
   }

@@ -1,12 +1,13 @@
 const { insertStrikeData, insertMostActive, insertFutureData } = require('./utils/header');
 
-async function insertAllData({ compressedFuture,compressedNext,compressedCurrent,compressedActive }) {
+async function insertAllData({ compressedFuture,compressedNext,compressedCurrent,compressedActive }, TABLE) {
+  // debugger
   await Promise.all([
-    insertStrikeData(compressedNext),
-    insertStrikeData(compressedCurrent),
+    insertStrikeData(compressedNext,TABLE),
+    insertStrikeData(compressedCurrent,TABLE),
 
-    insertFutureData(compressedFuture),
-    insertMostActive(compressedActive),
+    insertFutureData(compressedFuture,TABLE),
+    insertMostActive(compressedActive,TABLE),
   ]);
 }
 

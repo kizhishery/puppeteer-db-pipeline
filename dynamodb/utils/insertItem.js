@@ -1,11 +1,8 @@
 const { marshall } = require("@aws-sdk/util-dynamodb");
-const { DYNAMO_DB_TABLE, INSERT, MAX_CONNECTIONS } = require("../../constants");
+const { INSERT, MAX_CONNECTIONS } = require("../../constants");
 const { DynamoDBClient, PutItemCommand } = require("@aws-sdk/client-dynamodb");
 
-/**
- * ⚡ Maintain a small pool of reusable DynamoDB clients
- * for concurrent writes, re-used across Lambda warm starts.
- */
+
 const clientPool = [];
 let connectionIndex = 0;
 
@@ -23,7 +20,7 @@ function getDynamoClient() {
   return client;
 }
 
-async function insertItem(item) {
+async function insertItem(item,TABLE) {
   if (!INSERT) {
     return;
   }
@@ -31,10 +28,10 @@ async function insertItem(item) {
   const client = getDynamoClient();
 
   try {
-    
+    // debugger
     await client.send(
       new PutItemCommand({
-        TableName: DYNAMO_DB_TABLE,
+        TableName: TABLE,
         Item: marshall(item),
       })
     );
