@@ -1,15 +1,19 @@
 // api 
-const { FutureONE } = require('./api/futureClass');
-const { FutureTWO } = require('./api/futureClass2');
-const { OptionChainParent } = require('./api/optionClass');
-const { OptionChainParentTWO } = require('./api/optionClass2');
-const { MostActiveContractONE } = require('./api/activeClass');
-const { MostActiveContractTWO } = require('./api/activeClass2');
+const { 
+    FutureONE,FutureTWO,
+    OptionChainParent,OptionChainParentTWO, 
+    MostActiveContractONE,MostActiveContractTWO,
+} = require('./api');
 
-// state
-
+// browser
+const { Browser } = require('./browser/browser');
+const { ExpiryOne, ExpiryTwo } = require('./expiry/expiryClass');
 module.exports = { 
     FutureONE,FutureTWO,
     OptionChainParent,OptionChainParentTWO, 
     MostActiveContractONE,MostActiveContractTWO,
+
+    Browser,
+
+    ExpiryOne, ExpiryTwo
 }
