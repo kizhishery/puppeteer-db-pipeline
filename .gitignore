@@ -1,9 +1,6 @@
 *.env
 *.json
-<<<<<<< HEAD
 *zip
-=======
->>>>>>> e631793b3e50fd7353b43111109d2b8199a87061
 
 node_modules/
 
