@@ -30,7 +30,7 @@ function processLocalData(local) {
   const filterCurrent = getMiddleStrikes(current,underlyingValue);
   
   const mostActiveData = volData.find(item => item.underlying === EXCHANGE);
-  const future = valData.find(item => item.underlying === 'NIFTY' && item.instrumentType === 'FUTIDX');
+  const future = valData.find(item => item.underlying === EXCHANGE && item.instrumentType === 'FUTIDX');
   
   const items = {
     compressedFuture: new FutureONE(future,timestamp),
