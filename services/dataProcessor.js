@@ -50,11 +50,7 @@ async function processRemoteData(browser, PAGE_URL_1, PAGE_URL_2, cachedExpiry, 
   const { GET_API_EXPIRY_1, GET_API_EXPIRY_2 } = cachedExpiry;
 
   const [
-<<<<<<< HEAD
-    { records: { timestamp, underlyingValue , data : current } },
-=======
-    { records: { timestamp, data : current } },
->>>>>>> e631793b3e50fd7353b43111109d2b8199a87061
+    { records: { timestamp,underlyingValue, data : current } },
     { records: { data: next } },
     { volume: { data: volData }, value: { data: valData } }
   ] = await Promise.all([
