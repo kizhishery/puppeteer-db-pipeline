@@ -21,8 +21,7 @@ const {
   DYNAMO_DB_TABLE_2,
 } = require("./constants");
 
-const { Browser, ExpiryOne, ExpiryTwo } = require("./class");
-const { data1, data2 } = require('./dataClass');
+const { Browser } = require("./class");
 
 const browserManager = new Browser();
 
@@ -32,18 +31,23 @@ const main = async () => {
     browserManager.createPage(EXCHANGE2),
   ]);
 
-//   const [data1, data2] = await Promise.all([
-//     page1.fetchData(PAGE_URL_1, GET_API_1, true),
-//     page2.fetchData(PAGE_URL_2, GET_API_2),
-//   ]);
+  // ✅ Directly get expiry from each page
+  await Promise.all([
+    page1.buildExpiry(PAGE_URL_1, GET_API_1, true),
+    page2.buildExpiry(PAGE_URL_2, GET_API_2, true),
+  ]);
 
-  const [expiry1, expiry2] = [new ExpiryOne(data1).getExpiry(),new ExpiryTwo(data2).getExpiry()];
+  Promise.all([
+    page1.buildAttr(PAGE_ACTIVE_URL_1,GET_API_ACTIVE_1),
+    page2.buildAttr(PAGE_ACTIVE_URL_2,GET_API_ACTIVE_2,GET_API_FUTURE_2)
+  ])
   // Close pages when done
   await Promise.allSettled([
     browserManager.closePage(EXCHANGE),
     browserManager.closePage(EXCHANGE2),
   ]);
 
+  debugger;
   // Close browser
   await browserManager.closeBrowser();
 };

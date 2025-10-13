@@ -8,9 +8,9 @@ class Browser {
 
   async createPage(pageId) {
     const browser = await BrowserLauncher.getBrowser();
-    const pageWrapper = new Page(browser);
-    this.pageRegistry.addPage(pageId, pageWrapper);
-    return pageWrapper;
+    const page = new Page(browser,pageId);
+    this.pageRegistry.addPage(pageId, page);
+    return page;
   }
 
   getPage(pageId) {

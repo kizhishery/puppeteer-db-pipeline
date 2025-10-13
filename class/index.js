@@ -7,7 +7,7 @@ const {
 
 // browser
 const { Browser } = require('./browser/browser');
-const { ExpiryOne, ExpiryTwo } = require('./expiry/expiryClass');
+const { Expiry } = require('./expiry/expiryClass');
 module.exports = { 
     FutureONE,FutureTWO,
     OptionChainParent,OptionChainParentTWO, 
@@ -15,5 +15,5 @@ module.exports = {
 
     Browser,
 
-    ExpiryOne, ExpiryTwo
+    Expiry,
 }
