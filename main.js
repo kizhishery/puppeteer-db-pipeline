@@ -18,9 +18,7 @@ const {
   EXCHANGE2,
   GET_API_FUTURE_2,
   DYNAMO_DB_TABLE_1,
-  DYNAMO_DB_TABLE_2,
-  COOKIE_ENABLED,
-  COOKIE_DISABLED,
+  DYNAMO_DB_TABLE_2
 } = require("./constants");
 
 const { Browser, OptionChainParent, Processor } = require("./class");
@@ -40,27 +38,28 @@ const main = async () => {
     page2.buildAttr(PAGE_URL_2, GET_API_2, PAGE_ACTIVE_URL_2, GET_API_ACTIVE_2, GET_API_FUTURE_2);
 
     // Fetch expiry dates concurrently
-    // await Promise.all([
-    //   page1.buildExpiry(),
-    //   page2.buildExpiry(),
-    // ]);
+    await Promise.all([
+      page1.buildExpiry(),
+      page2.buildExpiry(),
+    ]);
 
     // Optionally, fetch options if implemented
-    // await Promise.all([
-    //   page1.fetchOptions(),
-    //   page2.fetchOptions(),
-    // ]);
+    await Promise.all([
+      page1.fetchOptions(),
+      page2.fetchOptions(),
+    ]);
 
-    // const obj1 = new Processor(page1).process();
-    // const obj2 = new Processor(page2).process();
-    const data1 = obj1;
-    const data2 = obj2;
+    // get compressed data
+    page1.getCompressed();
+    page2.getCompressed();
+    // const data1 = obj1;
+    // const data2 = obj2;
 
     debugger;
   } finally {
     // Close pages when done
     await Promise.allSettled([
-      // browserManager.closePage(EXCHANGE),
+      browserManager.closePage(EXCHANGE),
       browserManager.closePage(EXCHANGE2),
     ]);
 
