@@ -34,17 +34,19 @@ class OptionChainTWO {
           value = Number(String(value).replace(/,/g, ""));
           if (isNaN(value)) value = 0;
 
-          this[prop] = value;
+          this[prop] = Math.round(value*100)/100;
         }
       }
     }
 
+    // debugger
     this.ts = this.getTimestamp(timestamp);
     this.exp = this.getExpiry(data.End_TimeStamp);
+    
     this.str = parseFloat((data.Strike_Price || "0").replace(/,/g, "")) || 0;
-
-    // key = strike | expiry
     this.ttl = this.getTTL();
+    
+    // key = strike | expiry
     this.key = `${this.str} | ${this.exp}`;
 
     // CE = all fields prefixed with C_, PE = remaining
@@ -53,6 +55,7 @@ class OptionChainTWO {
   }
 
   getTimestamp(time) {
+    time = time.replace('|','');
     const timestamp = new Date(new Date(time + " UTC")).toISOString();
     return timestamp;
   }

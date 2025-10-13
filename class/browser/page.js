@@ -1,86 +1,90 @@
+// const { data1, data2 } = require("../../dataClass");
 const { Expiry } = require('../expiry/expiryClass'); // import Expiry class
-const { data1, data2 } = require("../../dataClass");
 const { EXCHANGE, BASE_URL, BASE_URL_2 } = require('../../constants');
 const { BrowserPageManager, CookieManager, ApiFetcher } = require('./pageWrapperClass');
+
 class Page {
   constructor(browser, exchange) {
     this.pageManager = new BrowserPageManager(browser);
-    this.cookieManager = null;
     this.apiFetcher = null;
-    this.attr = {
-      exchange : exchange
-    }
-    this.arr = {
-      expiry : [],
-      expiryURL : []
-    };
-    this.page = {
-      expiryPage : null,
-      activePage : null
-    };
-    this.api = {
-      activeApi : null,
-      expiryApi : null,
-      activeApi : null,
-      futureApi : null
-    }
+
+    this.attr = { exchange, cookieManager: null };
+    this.arr = { expiry: [], expiryURL: [] };
+    this.page = { expiryPage: null, activePage: null };
+    this.api = { expiryApi: null, activeApi: null, futureApi: null };
+    this.data = { current : [], next : []}
   }
 
-  async preparePage(pageURL, useCookies = false) {
+  async preparePage(pageURL) {
     const page = await this.pageManager.init();
     await page.goto(pageURL, { waitUntil: 'domcontentloaded', timeout: 60000 });
 
-    if (useCookies) {
-      this.cookieManager = new CookieManager(page);
-      await this.cookieManager.fetchCookies();
-    }
+    this.attr.cookieManager = new CookieManager(page);
+    await this.attr.cookieManager.fetchCookies();
 
-    this.apiFetcher = new ApiFetcher(page, this.cookieManager);
+    this.apiFetcher = new ApiFetcher(page, this.attr.cookieManager);
   }
 
-  async fetchData(pageURL, expiryApi, useCookies = false, retries = 2) {
+  // Single API fetch for expiry page
+  async fetchExpiry(retries = 3) {
     for (let attempt = 0; attempt < retries; attempt++) {
       try {
-        await this.preparePage(pageURL, useCookies);
-        return await this.apiFetcher.fetch(expiryApi);
+        await this.preparePage(this.page.expiryPage);
+        return await this.apiFetcher.fetch(this.api.expiryApi);
       } catch (err) {
-        console.warn(`fetchData attempt ${attempt + 1} failed: ${err.message}`);
+        console.warn(`fetchExpiry attempt ${attempt + 1} failed: ${err.message}`);
         await this.pageManager.close();
         if (attempt === retries - 1) throw err;
       }
     }
   }
 
-  // ✅ Combined getExpiry() that includes fetchData internally
-  async getExpiry(pageURL, expiryApi, useCookies) {
-    this.page.expiryPage = pageURL, this.api.expiryApi = expiryApi;
-    // const data = await this.fetchData(pageURL, expiryApi, useCookies, retries = 2);
-    const data = this.attr.exchange === EXCHANGE ? data1 : data2;
-    // debugger;
+  // Fetch options concurrently for first 2 expiry dates
+  async fetchOptions() {
+    if (!this.arr.expiry || this.arr.expiry.length === 0) return [];
+
+    const optionApis = this.arr.expiry.slice(0, 2).map(date =>
+      this.buildUrl(date, this.attr.exchange)
+    );
+
+    await this.preparePage(this.page.expiryPage);
+
+    const [current, next] = await Promise.all(
+      optionApis.map(url => this.apiFetcher.fetch(url))
+    );
+
+    this.data.current = current, this.data.next = next;
+  }
+
+  // Combined getExpiry that internally calls fetchExpiry
+  async getExpiry() {
+    const data = await this.fetchExpiry();
     const expiry = new Expiry(data, this.attr.exchange);
     this.arr.expiry = expiry.getExpiry();
-  }
-  
-  async buildExpiry(pageURL,expiryApi,useCookies = false) {
-    await this.getExpiry(pageURL,expiryApi,useCookies);
-
-    this.arr.expiryURL = this.arr.expiry.map(url => this.buildUrl(url,this.attr.exchange));
+    return this.arr.expiry;
   }
 
-  buildUrl(date,exchange) {
-    let url;
-    if(exchange == EXCHANGE)
-        url = `${BASE_URL}${encodeURIComponent(date)}`;
-    else 
-        url = `${BASE_URL_2}?Expiry=${encodeURIComponent(date)}&scrip_cd=1&strprice=0`;
-    // debugger
-    return url;
+  // Generate expiry URLs after getting expiry dates
+  async buildExpiry() {
+    await this.getExpiry();
+    this.arr.expiryURL = this.arr.expiry.map(date =>
+      this.buildUrl(date, this.attr.exchange)
+    );
   }
 
-  buildAttr(activePage,activeApi,futureApi = false) {
+  // Helper to set pages and APIs
+  buildAttr(pageURL, expiryApi, activePage, activeApi, futureApi = null) {
+    this.page.expiryPage = pageURL;
     this.page.activePage = activePage;
+    this.api.expiryApi = expiryApi;
     this.api.activeApi = activeApi;
-    this.api.futureApi = futureApi; 
+    this.api.futureApi = futureApi;
+  }
+
+  // Build URL from date and exchange
+  buildUrl(date, exchange) {
+    if (exchange === EXCHANGE) return `${BASE_URL}${encodeURIComponent(date)}`;
+    return `${BASE_URL_2}?Expiry=${encodeURIComponent(date)}&scrip_cd=1&strprice=0`;
   }
 
   async close() {

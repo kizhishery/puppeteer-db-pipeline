@@ -2,6 +2,7 @@
 *.json
 *zip
 
+edit.js
 node_modules/
 
 !package.json

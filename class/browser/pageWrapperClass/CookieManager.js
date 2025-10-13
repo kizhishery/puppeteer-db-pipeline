@@ -10,7 +10,7 @@ class CookieManager {
     this.cookieHeader = cookies.map(c => `${c.name}=${c.value}`).join("; ");
     return this.cookieHeader;
   }
-
+  
   getHeader() {
     return this.cookieHeader;
   }
