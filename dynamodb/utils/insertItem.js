@@ -11,7 +11,7 @@ function getDynamoClient() {
   if (clientPool.length < MAX_CONNECTIONS) {
     const newClient = new DynamoDBClient({ region: process.env.AWS_REGION });
     clientPool.push(newClient);
-    console.log(`⚡ Created DynamoDB client #${clientPool.length}`);
+    // console.log(`⚡ Created DynamoDB client #${clientPool.length}`);
   }
 
   // Rotate between existing connections

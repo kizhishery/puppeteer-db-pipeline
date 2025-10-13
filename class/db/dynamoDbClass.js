@@ -30,7 +30,7 @@ class DynamoInserter {
 }
 
 // Insert all items concurrently with limited concurrency
-async insertAll(concurrency = 10) {
+async insertAll(concurrency = 20) {
     if (!this.payload.length || !INSERT) {
         console.log('🏭 skipped insertion | INSERT = false')
         return;

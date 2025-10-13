@@ -27,7 +27,7 @@ async function main() {
     const processedData2 = await processFetchedData(globalBrowser2, PAGE_URL_2, PAGE_ACTIVE_URL_2, cachedExpiry2, GET_API_ACTIVE_2,EXCHANGE2,GET_API_FUTURE_2);
     console.timeEnd("🌐 cached expiry | Data process 2");
     
-    debugger;
+    // debugger;
     // ✅ Insert everything into DynamoDB
     console.time("🌐 insertion");
     // debugger
@@ -36,9 +36,9 @@ async function main() {
       await insertAllData(processedData2,DYNAMO_DB_TABLE_2)
     );
     console.timeEnd("🌐 insertion");
-    // debugger;
     
-
+    
+    debugger;
     return { status: 200 };
   } 
   catch (err) {
