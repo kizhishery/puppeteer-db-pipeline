@@ -1,5 +1,6 @@
 // const { data1, data2 } = require("../../dataClass");
 const { Expiry } = require('../expiry/expiryClass');
+const { DynamoInserter } = require('../db/dynamoDbClass');
 const { Processor } = require('../processor/processorClass');
 const { EXCHANGE, BASE_URL, BASE_URL_2 } = require('../../constants');
 const { BrowserPageManager, CookieManager, ApiFetcher } = require('./pageWrapperClass');
@@ -10,7 +11,7 @@ class Page {
     this.pageInstance = null; // 🔹 Puppeteer page instance (reused)
     this.apiFetcher = null;
 
-    this.attr = { exchange, cookieManager: null };
+    this.attr = { exchange , cookieManager: null, table : null };
     this.arr = { expiry: [], expiryURL: [] };
     this.page = { expiryPage: null, activePage: null };
     this.api = { expiryApi: null, activeApi: null, futureApi: null };
@@ -89,12 +90,13 @@ class Page {
     );
   }
 
-  buildAttr(pageURL, expiryApi, activePage, activeApi, futureApi = null) {
-    this.page.expiryPage = pageURL;
-    this.page.activePage = activePage;
+  buildAttr(pageURL, expiryApi, activePage, activeApi, futureApi, table) {
+    this.attr.table = table;
     this.api.expiryApi = expiryApi;
     this.api.activeApi = activeApi;
     this.api.futureApi = futureApi;
+    this.page.expiryPage = pageURL;
+    this.page.activePage = activePage;
   }
 
   buildUrl(date, exchange) {
@@ -107,6 +109,18 @@ class Page {
     const object = new Processor(args).process();
     this.compressed = object;
   }
+
+  async insertIntoDB() {
+    const { current, next } = this.compressed
+    
+    const insertNext = new DynamoInserter(next,this.attr.table).insertAll();
+    const insertCurrent = new DynamoInserter(current,this.attr.table).insertAll();
+
+    await Promise.all([
+      insertCurrent,insertNext
+    ]);
+  }
+  
   async close() {
     if (this.pageInstance) await this.pageInstance.close();
     await this.pageManager.close();
