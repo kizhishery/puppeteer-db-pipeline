@@ -3,6 +3,8 @@
 *zip
 
 edit.js
+
+trivial
 node_modules
 
 !package.json
