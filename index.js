@@ -1,4 +1,4 @@
-const { main, browserManager } = require('./main');
+const { main, globalBrowser } = require('./main');
 
 const runLocal = async () => {
   console.log('🚀 Running workflow locally...');
@@ -10,7 +10,7 @@ const runLocal = async () => {
   } 
   finally {
     // optionally close browser when running locally
-    if (browserManager) await browserManager.closeBrowser();
+    if (globalBrowser) await globalBrowser.closeBrowser();
   }
 };
 

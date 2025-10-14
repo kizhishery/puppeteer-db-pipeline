@@ -1,20 +1,19 @@
 const { Browser } = require('./class/browser/browser');
 const { WorkFlow } = require('./workFlow');
 
-let workflowInstance = null;
-let browserManager = null;
+let globalWorkFlow = null, globalBrowser = null;
 
 const main = async () => {
   // reuse browser across invocations
-  if (!browserManager) 
-    browserManager = new Browser();
+  if (!globalBrowser) 
+    globalBrowser = new Browser();
 
   // reuse singleton workflow
-  if (!workflowInstance) 
-    workflowInstance = WorkFlow.getInstance(browserManager);
+  if (!globalWorkFlow) 
+    globalWorkFlow = WorkFlow.getInstance(globalBrowser);
 
   try {
-    await workflowInstance.run();
+    await globalWorkFlow.run();
     return { status: 'success' };
   } catch (err) {
     console.error('❌ Workflow execution failed:', err);
@@ -22,4 +21,4 @@ const main = async () => {
   }
 };
 
-module.exports = { main, browserManager, };
+module.exports = { main, globalBrowser };
