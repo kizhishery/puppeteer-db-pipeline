@@ -2,11 +2,20 @@
 const { WorkFlowUtils } = require('./workFlowUtilsClass');
 
 class WorkFlow {
+  // Singleton 
+  static instance = null;
+
   constructor(browserManager) {
     this.browserManager = browserManager;
     this.utils = new WorkFlowUtils(this.browserManager);
   }
-
+  
+  static getInstance(browserManager) {
+    if (!WorkFlow.instance) {
+      WorkFlow.instance = new WorkFlow(browserManager);
+    }
+    return WorkFlow.instance;
+  }
   async run() {
     console.time("🌐 Total Workflow");
 
@@ -28,12 +37,14 @@ class WorkFlow {
 
     } catch (error) {
       console.error("❌ Workflow failed:", error);
+      throw error;
     } finally {
       await this.utils.closeAll();
       await this.browserManager.closeBrowser();
       console.timeEnd("🌐 Total Workflow");
     }
   }
+
 }
 
 module.exports = { WorkFlow };

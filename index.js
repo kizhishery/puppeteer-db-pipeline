@@ -1,31 +1,76 @@
-const { Browser } = require('./class');
-const { WorkFlow } = require('./workflow');
+const { Browser } = require('./class/browser/browser');
+const { WorkFlow } = require('./workFlow');
 
-const main = async () => {
-  const browserManager = new Browser();
+let workflowInstance = null;
+let browserManager = null;
+
+/**
+ * Core workflow executor
+ */
+const executeWorkflow = async () => {
+  // reuse browser across invocations
+  if (!browserManager) 
+    browserManager = new Browser();
+
+  // reuse singleton workflow
+  if (!workflowInstance) 
+    workflowInstance = WorkFlow.getInstance(browserManager);
+
   try {
-    const workflow = new WorkFlow(browserManager);
-    await workflow.run();
+    await workflowInstance.run();
+    return { status: 'success' };
   } catch (err) {
-    console.error('❌ Workflow failed:', err);
+    console.error('❌ Workflow execution failed:', err);
     throw err;
-  } finally {
-    await browserManager.closeBrowser();
   }
 };
 
-// For local
+/**
+ * Local execution
+ */
+const runLocal = async () => {
+  console.log('🚀 Running workflow locally...');
+  try {
+    const result = await executeWorkflow();
+    console.log('✅ Workflow completed:', result);
+  } catch (err) {
+    console.error('❌ Local workflow failed:', err);
+  } finally {
+    // optionally close browser when running locally
+    if (browserManager) await browserManager.closeBrowser();
+  }
+};
+
+/**
+ * Lambda handler
+ */
+const runLambda = async (event, context) => {
+  console.log('⚙️ Lambda invoked with event:', JSON.stringify(event));
+  try {
+    const result = await executeWorkflow();
+    return {
+      statusCode: 200,
+      body: JSON.stringify({
+        message: 'Workflow completed successfully',
+        result,
+      }),
+    };
+  } catch (err) {
+    console.error('❌ Lambda workflow failed:', err);
+    return {
+      statusCode: 500,
+      body: JSON.stringify({
+        message: 'Workflow failed',
+        error: err.message,
+      }),
+    };
+  }
+};
+
+// Run locally if executed directly
 if (require.main === module) {
-  main().catch(console.error);
+  runLocal();
 }
 
-// For AWS Lambda
-exports.handler = async () => {
-  try {
-    await main();
-    return { statusCode: 200, body: '✅ Success' };
-  } catch (err) {
-    console.error('❌ Lambda failed:', err);
-    return { statusCode: 500, body: JSON.stringify(err) };
-  }
-};
+// Lambda exports
+exports.handler = runLambda;
