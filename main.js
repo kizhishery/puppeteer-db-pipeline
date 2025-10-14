@@ -21,4 +21,4 @@ const main = async () => {
   }
 };
 
-module.exports = { main, globalBrowser };
+module.exports = { main };

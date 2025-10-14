@@ -1,4 +1,4 @@
-const { main, globalBrowser } = require('./main');
+const { main } = require('./main');
 
 const runLocal = async () => {
   console.log('🚀 Running workflow locally...');
