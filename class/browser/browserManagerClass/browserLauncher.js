@@ -26,15 +26,15 @@ class BrowserLauncher {
     const chromium = require('@sparticuz/chromium');
     const launchOptions = {
       args: [
-        '--no-sandbox',
-        '--disable-setuid-sandbox',
-        '--disable-dev-shm-usage',
-        '--disable-http2',
+              '--no-sandbox',
+              '--disable-gpu',              // disable GPU
+              '--single-process',
       ],
       defaultViewport: { width: 1280, height: 800 },
       executablePath: await chromium.executablePath(),
       headless: 'new',
       dumpio: false,
+
     };
     console.log('🚀 Launching Lambda browser...');
     return puppeteer.launch(launchOptions);
