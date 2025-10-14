@@ -1,5 +1,5 @@
 const { Browser } = require('./class/browser/browser');
-const { WorkFlow } = require('./workFlow');
+const { WorkFlow } = require('./workflow');
 
 let globalWorkFlow = null, globalBrowser = null;
 

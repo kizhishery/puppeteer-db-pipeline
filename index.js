@@ -15,7 +15,6 @@ const runLocal = async () => {
 };
 
 const runLambda = async (event) => {
-  console.log('⚙️ Lambda invoked with event:', JSON.stringify(event));
   try {
     await main();
     return {
