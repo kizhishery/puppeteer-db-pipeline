@@ -1,66 +1,31 @@
-const { Browser } = require('./class/browser/browser');
-const { WorkFlow } = require('./workFlow');
+const { main, browserManager } = require('./main');
 
-let workflowInstance = null;
-let browserManager = null;
-
-/**
- * Core workflow executor
- */
-const executeWorkflow = async () => {
-  // reuse browser across invocations
-  if (!browserManager) 
-    browserManager = new Browser();
-
-  // reuse singleton workflow
-  if (!workflowInstance) 
-    workflowInstance = WorkFlow.getInstance(browserManager);
-
-  try {
-    await workflowInstance.run();
-    return { status: 'success' };
-  } catch (err) {
-    console.error('❌ Workflow execution failed:', err);
-    throw err;
-  }
-};
-
-/**
- * Local execution
- */
 const runLocal = async () => {
   console.log('🚀 Running workflow locally...');
   try {
-    const result = await executeWorkflow();
-    console.log('✅ Workflow completed:', result);
-  } catch (err) {
+    await main();
+  } 
+  catch (err) {
     console.error('❌ Local workflow failed:', err);
-  } finally {
+  } 
+  finally {
     // optionally close browser when running locally
     if (browserManager) await browserManager.closeBrowser();
   }
 };
 
-/**
- * Lambda handler
- */
-const runLambda = async (event, context) => {
+const runLambda = async (event) => {
   console.log('⚙️ Lambda invoked with event:', JSON.stringify(event));
   try {
-    const result = await executeWorkflow();
+    await main();
     return {
-      statusCode: 200,
-      body: JSON.stringify({
-        message: 'Workflow completed successfully',
-        result,
-      }),
+      statusCode: 200
     };
-  } catch (err) {
-    console.error('❌ Lambda workflow failed:', err);
+  } 
+  catch (err) {
     return {
       statusCode: 500,
       body: JSON.stringify({
-        message: 'Workflow failed',
         error: err.message,
       }),
     };
