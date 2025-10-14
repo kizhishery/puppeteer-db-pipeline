@@ -1,7 +1,7 @@
 const { Browser } = require('./class/browser/browser');
 const { WorkFlow } = require('./workflow');
 
-let globalWorkFlow = null, globalBrowser = null;
+let globalWorkFlow, globalBrowser;
 
 const main = async () => {
   // reuse browser across invocations
