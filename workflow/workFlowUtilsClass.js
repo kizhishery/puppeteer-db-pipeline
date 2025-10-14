@@ -19,12 +19,9 @@ class WorkFlowUtils {
 
   /** Create both pages concurrently */
   async createPages() {
-    const [page1, page2] = await Promise.all([
-      this.browser.createPage(EXCHANGE),
-      this.browser.createPage(EXCHANGE2),
-    ]);
-    this.page1 = page1;
-    this.page2 = page2;
+    // initate seperatly else race condition creates two seperate browser instances
+    this.page1 = await this.browser.createPage(EXCHANGE);
+    this.page2 = await this.browser.createPage(EXCHANGE2);
   }
 
   /** Set up attributes for both pages */
