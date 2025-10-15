@@ -1,6 +1,6 @@
 // class/workFlow.js
+const { page1, page2 } = require('../data');
 const { WorkFlowUtils } = require('./workFlowUtilsClass');
-
 class WorkFlow {
   // Singleton 
   static instance = null;
@@ -14,8 +14,17 @@ class WorkFlow {
     if (!WorkFlow.instance) {
       WorkFlow.instance = new WorkFlow(browserManager);
     }
+    
     return WorkFlow.instance;
   }
+
+  // ✅ Check if all pages are initialized and cached
+  arePagesCached() {
+    const { page1, page2 } = this.utils;
+    const cache = page1 != null && page2 != null;
+    return cache;
+  }
+
   async run() {
     console.time("🌐 Total Workflow");
 
@@ -25,26 +34,67 @@ class WorkFlow {
       await this.utils.insertAttr();
       console.timeEnd("🌐 Page Setup");
 
-      console.time("🌐 Expiry & Options");
+      console.time("🌐 Expiry");
       await this.utils.buildExpiry();
+      console.timeEnd("🌐 Expiry");
+      
+      console.time("🌐 Options");
       await this.utils.fetchOptions();
-      console.timeEnd("🌐 Expiry & Options");
+      console.timeEnd("🌐 Options");
 
-      console.time("🌐 Compression & DB Insertion");
+      console.time("🌐 Compression");
       await this.utils.getCompressed();
+      console.timeEnd("🌐 Compression");
+      
+      console.time("🌐 DB Insertion");
       await this.utils.insertIntoDB();
-      console.timeEnd("🌐 Compression & DB Insertion");
-
+      console.timeEnd("🌐 DB Insertion");
+      
     } catch (error) {
       console.error("❌ Workflow failed:", error);
       throw error;
     } finally {
-      await this.utils.closeAll();
-      await this.browserManager.closeBrowser();
+      // await this.utils.closeAll();
+      // await this.browserManager.closeBrowser();
       console.timeEnd("🌐 Total Workflow");
     }
   }
 
+  async cacheRun() {
+    if (!this.arePagesCached()) {
+      throw new Error("Pages are not initialized. Run full workflow first.");
+    }
+    
+    console.time("🌐 Total Workflow (Cached)");
+    
+    // debugger;
+    try {
+      console.time("🌐 Options");
+      await this.utils.fetchOptions(); // start directly here
+      console.timeEnd("🌐 Options");
+      
+      console.time("🌐 Compression");
+      await this.utils.getCompressed();
+      console.timeEnd("🌐 Compression");
+
+      console.time("🌐 DB Insertion");
+      await this.utils.insertIntoDB();
+      console.timeEnd("🌐 DB Insertion");
+      
+      // debugger;
+    } catch (error) {
+      debugger;
+      console.error("❌ Cached workflow failed:", error);
+      throw error;
+    } finally {
+      console.timeEnd("🌐 Total Workflow (Cached)");
+    }
+  }
+  _injectPages() {
+    debugger;
+    Object.assign(this.utils, {page1,page2}); 
+    debugger;
+  }
 }
 
 module.exports = { WorkFlow };

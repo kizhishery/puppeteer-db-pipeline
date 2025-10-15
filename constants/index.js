@@ -5,7 +5,7 @@ if (!process.env.AWS_LAMBDA_FUNCTION_NAME && !process.env.LAMBDA_TASK_ROOT) {
 // cookie
 const COOKIE_ENABLED = true,COOKIE_DISABLED = false;
 // db
-const TTL=0.1, INSERT= true, MAX_CONNECTIONS = 40;
+const TTL=0.1, INSERT= false, MAX_CONNECTIONS = 40;
 // base url
 const { 
   GET_API_FUTURE_2,

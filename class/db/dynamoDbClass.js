@@ -51,7 +51,7 @@ async insertAll(concurrency = 20) {
     );
     
     await Promise.all(workers);
-    console.log('✅ Inserted All Data')
+    // console.log('✅ Inserted All Data')
   }
 }
 
