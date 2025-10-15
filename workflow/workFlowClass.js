@@ -5,14 +5,14 @@ class WorkFlow {
   // Singleton 
   static instance = null;
 
-  constructor(browserManager) {
-    this.browserManager = browserManager;
-    this.utils = new WorkFlowUtils(this.browserManager);
+  constructor(browser) {
+    this.browser = browser;
+    this.utils = new WorkFlowUtils(this.browser);
   }
   
-  static getInstance(browserManager) {
+  static getInstance(browser) {
     if (!WorkFlow.instance) {
-      WorkFlow.instance = new WorkFlow(browserManager);
+      WorkFlow.instance = new WorkFlow(browser);
     }
     
     return WorkFlow.instance;
@@ -55,7 +55,7 @@ class WorkFlow {
       throw error;
     } finally {
       // await this.utils.closeAll();
-      // await this.browserManager.closeBrowser();
+      // await this.browser.closeBrowser();
       console.timeEnd("🌐 Total Workflow");
     }
   }

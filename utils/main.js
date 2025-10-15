@@ -1,9 +1,8 @@
 // main.js
-const { Browser } = require('./class/browser/browser');
-const { WorkFlow } = require('./workflow');
+const { Browser } = require('../class/browser/browser');
+const { WorkFlow } = require('../workflow');
 
-let cachedBrowser;
-let cachedWorkflow;
+let cachedBrowser, cachedWorkflow;
 
 /**
  * Initialize and cache Browser + WorkFlow instances.
@@ -14,7 +13,7 @@ const workflow_inject = () => {
     cachedBrowser = Browser.getInstance();
   if (!cachedWorkflow) 
     cachedWorkflow = WorkFlow.getInstance(cachedBrowser);
-  return { workflow: cachedWorkflow };
+  return { workflow: cachedWorkflow,  browser : cachedBrowser };
 };
 
 const main = async () => {

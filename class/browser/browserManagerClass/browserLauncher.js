@@ -1,9 +1,10 @@
 const { addExtra } = require('puppeteer-extra');
 const StealthPlugin = require('puppeteer-extra-plugin-stealth');
 
-let Browser = null;
-
 class BrowserLauncher {
+  // Shared browser instance
+  static Browser = null;
+
   // Detect environment
   static isLambda = Boolean(process.env.AWS_LAMBDA_FUNCTION_NAME || process.env.LAMBDA_TASK_ROOT);
 
@@ -25,16 +26,11 @@ class BrowserLauncher {
     const puppeteer = BrowserLauncher.getPuppeteer();
     const chromium = require('@sparticuz/chromium');
     const launchOptions = {
-      args: [
-              '--no-sandbox',
-              '--disable-gpu',              // disable GPU
-              '--single-process',
-      ],
+      args: ['--no-sandbox', '--disable-gpu', '--single-process'],
       defaultViewport: { width: 1280, height: 800 },
       executablePath: await chromium.executablePath(),
       headless: 'new',
       dumpio: false,
-
     };
     console.log('🚀 Launching Lambda browser...');
     return puppeteer.launch(launchOptions);
@@ -53,23 +49,25 @@ class BrowserLauncher {
 
   // Get browser instance
   static async getBrowser() {
-    if (Browser && Browser.isConnected()) return Browser;
+    if (BrowserLauncher.Browser && BrowserLauncher.Browser.isConnected()) {
+      return BrowserLauncher.Browser;
+    }
 
-    Browser = BrowserLauncher.isLambda
+    BrowserLauncher.Browser = BrowserLauncher.isLambda
       ? await BrowserLauncher.launchLambdaBrowser()
       : await BrowserLauncher.launchLocalBrowser();
 
     console.log('✅ Browser launched.');
-    return Browser;
+    return BrowserLauncher.Browser;
   }
 
   // Close browser
   static async closeBrowser({ force = false } = {}) {
-    if (!Browser) return;
+    if (!BrowserLauncher.Browser) return;
 
     try {
-      if (Browser.isConnected()) {
-        await Browser.close();
+      if (BrowserLauncher.Browser.isConnected()) {
+        await BrowserLauncher.Browser.close();
         console.log('✅ Browser closed cleanly.');
       } else if (force) {
         BrowserLauncher.forceKillBrowser();
@@ -78,14 +76,15 @@ class BrowserLauncher {
       console.error('❌ Error closing browser:', err.message);
       if (force) BrowserLauncher.forceKillBrowser();
     } finally {
-      Browser = null;
+      BrowserLauncher.Browser = null;
     }
   }
 
   // Force kill browser process
   static forceKillBrowser() {
-    if (Browser && Browser.process) {
-      const pid = Browser.process().pid;
+    const B = BrowserLauncher.Browser;
+    if (B && B.process) {
+      const pid = B.process().pid;
       if (pid) {
         process.kill(pid, 'SIGKILL');
         console.log(`⚡ Browser process ${pid} killed forcefully.`);
