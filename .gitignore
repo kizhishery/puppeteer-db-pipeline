@@ -2,9 +2,9 @@
 *.json
 *zip
 
-edit.js
 
-trivial
 node_modules
+data
 
 !package.json
+!data/index.js
