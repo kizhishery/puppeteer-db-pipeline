@@ -49,6 +49,7 @@ class WorkFlow {
       await this.utils.insertIntoDB();
       console.timeEnd("🌐 DB Insertion");
       
+      debugger
     } catch (error) {
       console.error("❌ Workflow failed:", error);
       throw error;
@@ -89,12 +90,12 @@ class WorkFlow {
       console.timeEnd("🌐 Total Workflow (Cached)");
     }
   }
-  isLambda() {
+  _isLambda() {
     const { AWS_LAMBDA_FUNCTION_NAME : name } = process.env;
     return name;
   }
   _injectPages() {
-    if (! this.isLambda()) {
+    if (! this._isLambda()) {
       const { page1, page2 } = require('../data');
       debugger;
       Object.assign(this.utils, {page1,page2}); 
