@@ -149,12 +149,16 @@ class Page {
 
   /** 🔹 Insert processed data into DynamoDB */
   async insertIntoDB() {
-    const { current, next } = this.compressed;
+    // const { current, next , future, active } = this.compressed;
+    const compressedObj = this.compressed;
 
-    await Promise.all([
-      new DynamoInserter(next, this.attr.table).insertAll(),
-      new DynamoInserter(current, this.attr.table).insertAll(),
-    ]);
+    
+    await Promise.all(
+      Object.values(compressedObj)
+        .filter(Boolean)
+        .map(data => new DynamoInserter(data, this.attr.table)
+        .insertAll()
+    ));
 
     console.log(`💾 Inserted data into ${this.attr.table}`);
   }

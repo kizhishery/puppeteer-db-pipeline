@@ -13,7 +13,6 @@ class DynamoInserter {
 
   // Insert a single item
   async #insertItem(item) {
-      
       try {
           await this.client.send(
         new PutItemCommand({
@@ -31,6 +30,7 @@ class DynamoInserter {
 
 // Insert all items concurrently with limited concurrency
 async insertAll(concurrency = 20) {
+  debugger
     if (!this.payload.length || !INSERT) {
         console.log('🏭 skipped insertion | INSERT = false')
         return;

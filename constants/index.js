@@ -4,7 +4,7 @@ if (!process.env.AWS_LAMBDA_FUNCTION_NAME && !process.env.LAMBDA_TASK_ROOT) {
 }
 
 // loop process locally
-const ITERATION = 2;
+const ITERATION = 1;
 // db
 const TTL=0.1, INSERT= true, MAX_CONNECTIONS = 40;
 
