@@ -27,7 +27,7 @@ const main = async () => {
     await workflow.run();
   }
 
-  return { status: 'success' };
+  return { status: 200, message : 'success' };
 };
 
 module.exports = { main, workflow_inject };

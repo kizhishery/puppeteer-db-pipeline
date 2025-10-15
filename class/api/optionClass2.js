@@ -26,8 +26,9 @@ class OptionChainTWO {
           let value = data[key] ?? data[key.replace(/^C_/, "")] ?? null;
 
           // Skip conversion for 'ul'
-          if (key === "ul") {
+          if (prop == "ul") {
             this[prop] = value;
+            // debugger;
             continue;
           }
 
@@ -79,6 +80,7 @@ class OptionChainTWO {
       pe: { ...this.pe },
     };
 
+    debugger;
     return obj;
   }
 }
