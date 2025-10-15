@@ -1,4 +1,4 @@
-const { Page } = require('./page');
+const { Page } = require('../page/page');
 const { BrowserLauncher, PageRegistry } = require('./browserManagerClass');
 
 class Browser {
