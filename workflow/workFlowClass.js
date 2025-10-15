@@ -1,10 +1,9 @@
 // class/workFlow.js
-// const { page1, page2 } = require('../data');
 const { WorkFlowUtils } = require('./workFlowUtilsClass');
 class WorkFlow {
   // Singleton 
   static instance = null;
-
+  
   constructor(browser) {
     this.browser = browser;
     this.utils = new WorkFlowUtils(this.browser);
@@ -17,7 +16,7 @@ class WorkFlow {
     
     return WorkFlow.instance;
   }
-
+  
   // ✅ Check if all pages are initialized and cached
   arePagesCached() {
     const { page1, page2 } = this.utils;
@@ -27,13 +26,13 @@ class WorkFlow {
 
   async run() {
     console.time("🌐 Total Workflow");
-
+    
     try {
       console.time("🌐 Page Setup");
       await this.utils.createPages();
       await this.utils.insertAttr();
       console.timeEnd("🌐 Page Setup");
-
+      
       console.time("🌐 Expiry");
       await this.utils.buildExpiry();
       console.timeEnd("🌐 Expiry");
@@ -41,7 +40,7 @@ class WorkFlow {
       console.time("🌐 Options");
       await this.utils.fetchOptions();
       console.timeEnd("🌐 Options");
-
+      
       console.time("🌐 Compression");
       await this.utils.getCompressed();
       console.timeEnd("🌐 Compression");
@@ -59,7 +58,7 @@ class WorkFlow {
       console.timeEnd("🌐 Total Workflow");
     }
   }
-
+  
   async cacheRun() {
     if (!this.arePagesCached()) {
       throw new Error("Pages are not initialized. Run full workflow first.");
@@ -76,7 +75,7 @@ class WorkFlow {
       console.time("🌐 Compression");
       await this.utils.getCompressed();
       console.timeEnd("🌐 Compression");
-
+      
       console.time("🌐 DB Insertion");
       await this.utils.insertIntoDB();
       console.timeEnd("🌐 DB Insertion");
@@ -90,10 +89,17 @@ class WorkFlow {
       console.timeEnd("🌐 Total Workflow (Cached)");
     }
   }
+  isLambda() {
+    const { AWS_LAMBDA_FUNCTION_NAME : name } = process.env;
+    return name;
+  }
   _injectPages() {
-    debugger;
-    // Object.assign(this.utils, {page1,page2}); 
-    debugger;
+    if (! this.isLambda()) {
+      const { page1, page2 } = require('../data');
+      debugger;
+      Object.assign(this.utils, {page1,page2}); 
+      debugger;
+    }
   }
 }
 
