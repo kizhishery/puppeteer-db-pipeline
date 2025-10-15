@@ -28,24 +28,31 @@ class FutureTWO {
       this[prop] = value;
     }
     
-    this.ts = this.getTimestamp(timestamp);
-    this.exp = this.getExpiry();
+    // debugger;
+    this.ts = this.#getTimestamp(timestamp);
+    this.exp = this.#getExpiry();
     this.ul = this.ul.substr(0,6);
     this.key = `${this.ul} | ${this.exp}`;
-    this.ttl = this.getTTL();
+    this.ttl = this.#getTTL();
   }
   
-  getTimestamp(time) {
-    const timestamp = new Date(new Date(time + ' UTC')).toISOString();
+  #getTimestamp(time) {
+    const trimedDate = this.#getTrimmed(time);
+    const timestamp = new Date(trimedDate + ' UTC').toISOString();
     return timestamp;
   }
+
+  #getTrimmed(time) {
+    const trim = time.trim().replace('|','');
+    return trim;
+  }
   
-  getExpiry() {
+  #getExpiry() {
     const expiry = new Date(this.exp + ' UTC').toISOString().split('T')[0];
     return expiry;
   }
 
-  getTTL() {
+  #getTTL() {
     let ttl = Math.floor(new Date(this.ts).getTime() / 1000);
     return Math.round(ttl + TTL);
   }

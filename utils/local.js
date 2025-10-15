@@ -1,13 +1,14 @@
+const { ITERATION } = require('../constants');
 // runLocal.js
 const { main, workflow_inject } = require('./main');
 
-const runLocal = async (iterations = 2, delay = 1000) => {
+const runLocal = async (delay = 1000) => {
   console.log('🚀 Running workflow locally...');
 
   // Initialize browser + workflow once
   const { workflow, browser } = workflow_inject();
 
-  for (let i = 0; i < iterations; i++) {
+  for (let i = 0; i < ITERATION; i++) {
     console.log(`\n🔄 Run #${i}`);
     try {
       await main(); // Will reuse cached browser/workflow if available

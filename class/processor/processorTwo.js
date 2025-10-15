@@ -1,5 +1,5 @@
 const { BaseProcessor } = require("./baseProcessor");
-const { OptionChainParentTWO } = require("../api");
+const { OptionChainParentTWO, MostActiveContractTWO, FutureTWO } = require("../api");
 
 class ProcessorTwo extends BaseProcessor {
   constructor(data) {
@@ -13,13 +13,15 @@ class ProcessorTwo extends BaseProcessor {
       data: {
         current: { Table: currentData, ASON: { DT_TM: timestamp } },
         next: { Table: nextData },
+        active : [ mostActive ],
+        future : [ firstFuture, { LTP } ]
       },
     } = this.data;
 
     // Default underlying value for this exchange
-    const underlyingValue = 81500;
+    const underlyingValue = LTP;
 
-    return this.handleProcess({
+    const { current , next } = this.handleProcess({
       currentData,
       nextData,
       timestamp,
@@ -27,6 +29,11 @@ class ProcessorTwo extends BaseProcessor {
       exchange,
       Handler: OptionChainParentTWO,
     });
+
+    const active = new MostActiveContractTWO(mostActive,timestamp);
+    const future = new FutureTWO(firstFuture,timestamp);
+
+    return { current, next, active, future};
   }
 }
 

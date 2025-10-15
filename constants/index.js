@@ -2,12 +2,14 @@
 if (!process.env.AWS_LAMBDA_FUNCTION_NAME && !process.env.LAMBDA_TASK_ROOT) {
   require("dotenv").config();
 }
-// cookie
-const COOKIE_ENABLED = true,COOKIE_DISABLED = false;
+
+// loop process locally
+const ITERATION = 2;
 // db
-const TTL=0.1, INSERT= false, MAX_CONNECTIONS = 40;
+const TTL=0.1, INSERT= true, MAX_CONNECTIONS = 40;
+
 // base url
-const { 
+const {
   GET_API_FUTURE_2,
   EXCHANGE,EXCHANGE2,
   GET_API_1,GET_API_2,
@@ -19,6 +21,7 @@ const {
 } = process.env;
 
 module.exports = {
+  ITERATION,
   GET_API_FUTURE_2,
   EXCHANGE,EXCHANGE2,
   BASE_URL,BASE_URL_2,
@@ -27,6 +30,5 @@ module.exports = {
   TTL,INSERT,MAX_CONNECTIONS,
   GET_API_ACTIVE_1,GET_API_ACTIVE_2,
   DYNAMO_DB_TABLE_1,DYNAMO_DB_TABLE_2,
-  PAGE_ACTIVE_URL_1,PAGE_ACTIVE_URL_2,
-  COOKIE_ENABLED,COOKIE_DISABLED
+  PAGE_ACTIVE_URL_1,PAGE_ACTIVE_URL_2
 };

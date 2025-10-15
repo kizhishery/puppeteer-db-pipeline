@@ -12,7 +12,7 @@ class DynamoInserter {
   }
 
   // Insert a single item
-  async insertItem(item) {
+  async #insertItem(item) {
       
       try {
           await this.client.send(
@@ -41,7 +41,7 @@ async insertAll(concurrency = 20) {
     const worker = async () => {
         while (index < this.payload.length) {
             const currentIndex = index++;
-            await this.insertItem(this.payload[currentIndex]);
+            await this.#insertItem(this.payload[currentIndex]);
         }
     };
     

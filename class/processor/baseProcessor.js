@@ -35,7 +35,7 @@ class BaseProcessor {
 
     return {
       current: new Handler(compressedCurrent, timestamp).getData(),
-      next: new Handler(compressedNext, timestamp).getData(),
+      next: new Handler(compressedNext, timestamp).getData()
     };
   }
 }

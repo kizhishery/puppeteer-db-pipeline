@@ -5,6 +5,7 @@ class ApiFetcher {
   }
 
   async fetch(apiURL) {
+    // debugger
     if (!this.page) throw new Error("Page not initialized");
     const cookieHeader = this.cookieManager ? this.cookieManager.getHeader() : "";
     return await this.page.evaluate(

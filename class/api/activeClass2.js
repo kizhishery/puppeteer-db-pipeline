@@ -12,18 +12,24 @@ class MostActiveContractTWO {
       this[alias] = data[originalKey];
     }
     
-    this.ts = this.getTimestamp(timestamp)
-    this.ttl = this.getTTL();
+    this.ts = this.#getTimestamp(timestamp)
+    this.ttl = this.#getTTL();
     this.key = "active";
     this.ul = this.ul.substr(0,6)
   }
 
-  getTimestamp(time) {
-    const timestamp = new Date(new Date(time + ' UTC')).toISOString();
+  #getTimestamp(time) {
+    const trimedDate = this.#getTrimmed(time);
+    const timestamp = new Date(trimedDate + ' UTC').toISOString();
     return timestamp;
   }
+
+  #getTrimmed(time) {
+    const trim = time.trim().replace('|','');
+    return trim;
+  }
   
-  getTTL() {
+  #getTTL() {
     let ttl = Math.floor(new Date(this.ts).getTime() / 1000);
     return Math.round(ttl + TTL);
   }

@@ -37,23 +37,29 @@ class WorkFlow {
       await this.utils.buildExpiry();
       console.timeEnd("🌐 Expiry");
       
-      console.time("🌐 Options");
+      console.time("🌐 Options Data");
       await this.utils.fetchOptions();
-      console.timeEnd("🌐 Options");
+      console.timeEnd("🌐 Options Data");
+
+      console.time("🌐 most active and future");
+      await this.utils.fetchOtherData();
+      console.timeEnd("🌐 most active and future");
       
       console.time("🌐 Compression");
       await this.utils.getCompressed();
       console.timeEnd("🌐 Compression");
       
+      // debugger;
       console.time("🌐 DB Insertion");
       await this.utils.insertIntoDB();
       console.timeEnd("🌐 DB Insertion");
       
-      debugger
+      // debugger
     } catch (error) {
       console.error("❌ Workflow failed:", error);
       throw error;
-    } finally {
+    } 
+    finally {
       // await this.utils.closeAll();
       // await this.browser.closeBrowser();
       console.timeEnd("🌐 Total Workflow");

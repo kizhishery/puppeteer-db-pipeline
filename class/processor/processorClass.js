@@ -10,7 +10,7 @@ class Processor {
 
   process() {
     if (!this.data || !this.data.data) {
-      return { current: null, next: null };
+      return { current: null, next: null, active : null, future : null };
     }
 
     if (this.exchange === EXCHANGE) {

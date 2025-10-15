@@ -41,11 +41,11 @@ class OptionChainTWO {
     }
 
     // debugger
-    this.ts = this.getTimestamp(timestamp);
-    this.exp = this.getExpiry(data.End_TimeStamp);
+    this.ts = this.#getTimestamp(timestamp);
+    this.exp = this.#getExpiry(data.End_TimeStamp);
     
     this.str = parseFloat((data.Strike_Price || "0").replace(/,/g, "")) || 0;
-    this.ttl = this.getTTL();
+    this.ttl = this.#getTTL();
     
     // key = strike | expiry
     this.key = `${this.str} | ${this.exp}`;
@@ -55,17 +55,17 @@ class OptionChainTWO {
     this.pe = new OptionData(data); // For TWO, PE can be mapped differently if needed
   }
 
-  getTimestamp(time) {
+  #getTimestamp(time) {
     time = time.replace('|','');
     const timestamp = new Date(new Date(time + " UTC")).toISOString();
     return timestamp;
   }
 
-  getExpiry(date) {
+  #getExpiry(date) {
     const expiry = new Date(date).toISOString().split("T")[0];
     return expiry;
   }
-  getTTL() {
+  #getTTL() {
     let ttl = Math.floor(new Date(this.ts).getTime() / 1000);
     return Math.round(ttl + TTL);
   }

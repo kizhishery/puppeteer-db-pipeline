@@ -40,8 +40,14 @@ class BrowserLauncher {
   static async launchLocalBrowser() {
     const puppeteer = BrowserLauncher.getPuppeteer();
     const launchOptions = {
-      args: ['--no-sandbox', '--disable-setuid-sandbox'],
+      args: [
+        '--no-sandbox', 
+        '--disable-setuid-sandbox',
+        // '--start-maximized', 
+        // '--auto-open-devtools-for-tabs', 
+      ],
       headless: 'new',
+      // devtools : true
     };
     console.log('🚀 Launching local browser...');
     return puppeteer.launch(launchOptions);

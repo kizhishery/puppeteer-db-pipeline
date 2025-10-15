@@ -46,8 +46,17 @@ class WorkFlowUtils {
       this.page1.fetchOptions(),
       this.page2.fetchOptions(),
     ]);
+
   }
 
+  async fetchOtherData() {
+    // wait for pages to build then cache be used
+    await Promise.all([
+      this.page1.fetchOtherData(),
+      this.page2.fetchOtherData()
+    ]);
+  }
+  
   /** Compress data */
   async getCompressed() {
     await Promise.all([

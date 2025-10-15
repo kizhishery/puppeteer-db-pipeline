@@ -1,5 +1,5 @@
 const { BaseProcessor } = require("./baseProcessor");
-const { OptionChainParent } = require("../api");
+const { OptionChainParent, FutureONE, MostActiveContractONE } = require("../api");
 
 class ProcessorOne extends BaseProcessor {
   constructor(data) {
@@ -17,10 +17,11 @@ class ProcessorOne extends BaseProcessor {
         next: {
           records: { data: nextData },
         },
+        active : { value : { data : value }, volume : { data : volume }}
       },
     } = this.data;
 
-    return this.handleProcess({
+    const { current, next } = this.handleProcess({
       currentData,
       nextData,
       timestamp,
@@ -28,6 +29,14 @@ class ProcessorOne extends BaseProcessor {
       exchange,
       Handler: OptionChainParent,
     });
+
+    const filterFuture = value.find(val => val.instrumentType == "FUTIDX");
+    const filterVolume = volume.find(val => val.instrumentType == "OPTIDX");
+
+    const future = new FutureONE(filterFuture,timestamp);
+    const active = new MostActiveContractONE(filterVolume, timestamp);
+    
+    return { current, next, active, future };
   }
 }
 

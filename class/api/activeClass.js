@@ -13,16 +13,16 @@ class MostActiveContractONE {
     }
     
     this.key = "active";
-    this.ts = this.getTimestamp(timestamp);
-    this.ttl = this.getTTL();
+    this.ts = this.#getTimestamp(timestamp);
+    this.ttl = this.#getTTL();
   }
 
-  getTimestamp(time) {
+  #getTimestamp(time) {
     let timestamp = new Date(time + ' UTC').toISOString();
     return timestamp;
   }
   
-  getTTL() {
+  #getTTL() {
     let ttl = Math.floor(new Date(this.ts).getTime() / 1000);
     return Math.floor(ttl + TTL);
   }

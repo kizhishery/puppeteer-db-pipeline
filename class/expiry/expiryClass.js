@@ -39,7 +39,6 @@ class Expiry {
     }
 
     const expiryDates = this.data.Table1
-      .slice(0, 2)
       .map(entry => entry?.ExpiryDate)
       .filter(Boolean); // remove undefined/null if any
 

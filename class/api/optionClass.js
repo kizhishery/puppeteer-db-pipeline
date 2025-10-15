@@ -27,28 +27,28 @@ class OptionData {
 
 class OptionChainONE {
   constructor(data, timestamp) {
-    this.ts = this.getTimestamp(timestamp);
-    this.exp = this.getExpiry(data.expiryDates);
+    this.ts = this.#getTimestamp(timestamp);
+    this.exp = this.#getExpiry(data.expiryDates);
     this.str = data.strikePrice ?? 0;
     
-    this.ttl = this.getTTL();
+    this.ttl = this.#getTTL();
     this.key = `${this.str} | ${this.exp}`;
     
     this.ce = new OptionData(data.CE ?? {});
     this.pe = new OptionData(data.PE ?? {});
   }
 
-  getTimestamp(time) {
+  #getTimestamp(time) {
     let timestamp = new Date(time + ' UTC').toISOString();
     return timestamp;
   }
 
-  getExpiry(time) {
+  #getExpiry(time) {
     let expiry = new Date(time + ' UTC').toISOString().split('T')[0] ?? null;
     return expiry;
   }
 
-  getTTL() {
+  #getTTL() {
     let ttl = Math.floor(new Date(this.ts).getTime() / 1000);
     return Math.floor(ttl + TTL);
   }
