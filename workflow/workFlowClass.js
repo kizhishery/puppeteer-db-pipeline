@@ -1,5 +1,5 @@
 // class/workFlow.js
-const { page1, page2 } = require('../data');
+// const { page1, page2 } = require('../data');
 const { WorkFlowUtils } = require('./workFlowUtilsClass');
 class WorkFlow {
   // Singleton 
@@ -92,7 +92,7 @@ class WorkFlow {
   }
   _injectPages() {
     debugger;
-    Object.assign(this.utils, {page1,page2}); 
+    // Object.assign(this.utils, {page1,page2}); 
     debugger;
   }
 }
