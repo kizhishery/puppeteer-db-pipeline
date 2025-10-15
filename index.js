@@ -1,10 +1,10 @@
 // index.js
-const { runLambda } = require('./utils/lambda');
+const { runLocal ,runLambda } = require('./utils');
 // Lambda handler
 exports.handler = runLambda;
 
+debugger
 
-const { runLocal } = require('./utils/local');
 // Run locally if executed directly
 if (require.main === module) {
   runLocal().catch(console.error);

@@ -42,4 +42,4 @@ const gracefulShutdown = async () => {
 process.once("SIGTERM", gracefulShutdown);
 
 // Export for Lambda
-exports.handler = { runLambda };
+module.exports = { runLambda };
