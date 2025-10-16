@@ -18,7 +18,8 @@ class WorkFlow {
   
   // ✅ Check if all pages are initialized and cached
   arePagesCached() {
-    const { pages : { page1, page2 } } = this.utils;
+    // debugger;
+    const { pages : { pageExchange_1 : page1, pageExchange2_1 : page2 } } = this.utils;
     const cache = page1 != null && page2 != null;
     return cache;
   }
@@ -45,12 +46,12 @@ class WorkFlow {
       await this.utils.fetchOtherData();
       console.timeEnd("🌐 most active and future");
       
-      debugger;
+      // debugger;
       console.time("🌐 Compression");
       await this.utils.getCompressed();
       console.timeEnd("🌐 Compression");
       
-      debugger;
+      // debugger;
       console.time("🌐 DB Insertion");
       await this.utils.insertIntoDB();
       console.timeEnd("🌐 DB Insertion");
