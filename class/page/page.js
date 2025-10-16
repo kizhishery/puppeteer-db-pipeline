@@ -19,10 +19,10 @@ class Page {
       table: null,
     };
 
-    this.arr = { expiry: [], expiryURL: [] };
+    this.arr = { expiry: null, expiryURL: null };
     this.page = { expiryPage: null, activePage: null };
     this.api = { expiryApi: null, activeApi: null, futureApi: null };
-    this.data = { current: [], next: [], active: [], future: [] };
+    this.data = { current: null, next: null, active: null, future: null };
     this.compressed = {};
 
     this.pageInstances = {}; // ✅ store multiple prepared Puppeteer pages
