@@ -117,9 +117,6 @@ class Page {
       Boolean
     );
     await Promise.all(pagesToPrepare.map((url) => this.preparePage(url)));
-    console.log(
-      `✅ Prepared both expiry & active pages for ${this.attr.exchange}`
-    );
   }
 
   /** 🔹 Fetch expiry data (with retries) */
