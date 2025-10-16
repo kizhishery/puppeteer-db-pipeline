@@ -7,7 +7,6 @@ const { BrowserPageManager, CookieManager, ApiFetcher } = require('./pageWrapper
 class Page {
   constructor(browser, exchange) {
     this.pageManager = new BrowserPageManager(browser);
-    this.pageInstance = null;
     this.apiFetcher = null;
 
     this.attr = {
@@ -18,20 +17,68 @@ class Page {
 
     this.arr = { expiry: [], expiryURL: [] };
     this.page = { expiryPage: null, activePage: null };
-    this.api = { expiryApi: null, activeApi: null, futureApi: null };
-    this.data = { current: [], next: [], future: [], active : [] };
+    this.api = { expiryApi: null, activeApi: null, futureApi : null };
+    this.data = { current: [], next: [], active: [], future : []};
     this.compressed = {};
+
+    this.pageInstances = {}; // ✅ store multiple prepared Puppeteer pages
   }
 
-  /** ✅ Initialize Puppeteer page once */
-  async initPage() {
-    if (!this.pageInstance) {
-      this.pageInstance = await this.pageManager.init();
-      console.log(`📄 Page initialized for ${this.attr.exchange}`);
+  /** ✅ Create both expiry and active pages immediately */
+  async initAllPages() {
+    const browser = this.pageManager.browser;
+
+    if (!this.page.expiryPage || !this.page.activePage) {
+      console.warn('⚠️ Page URLs not yet assigned in buildAttr() — skipping initAllPages()');
+      return;
+    }
+
+    // Create expiry tab
+    if (!this.pageInstances.expiry) {
+      this.pageInstances.expiry = await browser.newPage();
+      console.log(`📄 Created expiry page for ${this.attr.exchange}`);
+    }
+
+    // Create active tab
+    if (!this.pageInstances.active) {
+      this.pageInstances.active = await browser.newPage();
+      console.log(`📄 Created active page for ${this.attr.exchange}`);
     }
   }
 
-  /** ✅ Initialize CookieManager & ApiFetcher once */
+  /** ✅ Build attributes for this page */
+  buildAttr(expiryPage, expiryApi, activePage, activeApi, futureApi, table) {
+    Object.assign(this.attr, { table });
+    Object.assign(this.api, { expiryApi, activeApi, futureApi });
+    Object.assign(this.page, { expiryPage, activePage });
+  }
+
+  /** ✅ Prepare one of the pre-created pages (no recreation) */
+  /** ✅ Prepare one of the pre-created pages (no recreation) */
+  async preparePage(pageURL) {
+    const pageKey =
+      pageURL === this.page.expiryPage
+        ? 'expiry'
+        : pageURL === this.page.activePage
+        ? 'active'
+        : null;
+
+    if (!pageKey || !this.pageInstances[pageKey]) {
+      throw new Error(`No pre-created page instance found for URL: ${pageURL}`);
+    }
+
+    const page = this.pageInstances[pageKey];
+
+    const alreadyReady =
+      this.apiFetcher && this.attr.cookieManager && page.url() === pageURL;
+
+    if (!alreadyReady) {
+      await page.goto(pageURL, { waitUntil: 'networkidle2', timeout: 300000 });
+      await this.initDependencies(page);
+    }
+  }
+
+  /** ✅ Initialize dependencies only once per page */
   async initDependencies(page) {
     if (!this.attr.cookieManager) {
       this.attr.cookieManager = new CookieManager(page);
@@ -42,34 +89,20 @@ class Page {
       this.apiFetcher = new ApiFetcher(page, this.attr.cookieManager);
     }
   }
-  
-  /** ✅ Prepare page — safely skips if already ready */
-  async preparePage(pageURL) {
-    await this.initPage();
-    
-    const page = this.pageInstance;
-    
-    // Skip reload if same URL & already initialized
-    const alreadyReady =
-    this.apiFetcher && this.attr.cookieManager && page.url() === pageURL;
-    
-    if (alreadyReady) return;
 
-    await page.goto(pageURL, { waitUntil: 'networkidle2', timeout: 300000 });
-    await this.initDependencies(page);
+  /** ✅ Prepare both expiry and active pages before fetching */
+  async prepareAllPages() {
+    const pagesToPrepare = [this.page.expiryPage, this.page.activePage].filter(Boolean);
+    await Promise.all(pagesToPrepare.map(url => this.preparePage(url)));
+    console.log(`✅ Prepared both expiry & active pages for ${this.attr.exchange}`);
   }
 
-  /** 🔹 Configure all attributes for this page */
-  buildAttr(pageURL, expiryApi, activePage, activeApi, futureApi, table) {
-    Object.assign(this.attr, { table });
-    Object.assign(this.api, { expiryApi, activeApi, futureApi });
-    Object.assign(this.page, { expiryPage: pageURL, activePage });
-  }
   /** 🔹 Fetch expiry data (with retries) */
   async fetchExpiry(retries = 3) {
     for (let attempt = 1; attempt <= retries; attempt++) {
       try {
-        await this.preparePage(this.page.expiryPage);
+        // ✅ prepare both pages before fetching
+        await this.prepareAllPages();
         return await this.apiFetcher.fetch(this.api.expiryApi);
       } catch (err) {
         console.warn(`⚠️ fetchExpiry attempt ${attempt} failed: ${err.message}`);
@@ -78,43 +111,58 @@ class Page {
     }
   }
 
+
   /** 🔹 Fetch options for current and next expiry */
   async fetchOptions() {
     if (!this.arr.expiry?.length) return [];
 
     await this.preparePage(this.page.expiryPage);
 
-    const optionUrls = this.arr.expiry
-      .map(date => this.buildUrl(date, this.attr.exchange));
+    const optionUrls = this.arr.expiry.map(date => this.buildUrl(date, this.attr.exchange));
 
     const [current, next] = await Promise.all(
       optionUrls.map(url => this.apiFetcher.fetch(url))
     );
 
-    // this.data = { current, next };
-    Object.assign(this.data,{current,next});
+    Object.assign(this.data, { current, next });
   }
 
-  async fetchOtherData() {
-    if(this.api.activeApi == null) return [];
-  
+  /** 🔹 Fetch only active data */
+  async fetchActiveData() {
+    if (!this.api.activeApi) return [];
+
     await this.preparePage(this.page.activePage);
-    
-    // debugger;
-    if(this.attr.exchange == EXCHANGE) {
-      const [ active ] = await Promise.all([
-        this.apiFetcher.fetch(this.api.activeApi),
-      ]);
-      Object.assign(this.data,{active});
-    }
-    else {
-      const [active, future] = await Promise.all([
-        this.apiFetcher.fetch(this.api.activeApi),
-        this.apiFetcher.fetch(this.api.futureApi),
-      ]);
-      Object.assign(this.data,{active, future});
+
+    const [active] = await Promise.all([
+      this.apiFetcher.fetch(this.api.activeApi),
+    ]);
+
+    Object.assign(this.data, { active });
+  }
+
+  /** 🔹 Fetch both active and future data (for non-primary exchanges) */
+  async fetchActiveAndFutureData() {
+    if (!this.api.activeApi || !this.api.futureApi) return [];
+
+    await this.preparePage(this.page.activePage);
+
+    const [active, future] = await Promise.all([
+      this.apiFetcher.fetch(this.api.activeApi),
+      this.apiFetcher.fetch(this.api.futureApi),
+    ]);
+
+    Object.assign(this.data, { active, future });
+  }
+
+  /** 🔹 Wrapper to choose correct fetch type */
+  async fetchOtherData() {
+    if (this.attr.exchange === EXCHANGE) {
+      await this.fetchActiveData();
+    } else {
+      await this.fetchActiveAndFutureData();
     }
   }
+
 
   /** 🔹 Fetch and process expiry list */
   async getExpiry() {
@@ -132,7 +180,6 @@ class Page {
     );
   }
 
-
   /** 🔹 Construct expiry URL */
   buildUrl(date, exchange) {
     return exchange === EXCHANGE
@@ -149,30 +196,31 @@ class Page {
 
   /** 🔹 Insert processed data into DynamoDB */
   async insertIntoDB() {
-    const { current, next , future, active } = this.compressed;
-    // debugger;
-    
     await Promise.all(
       Object.values(this.compressed)
         .filter(Boolean)
         .map(data => {
           const dbWriter = new DynamoInserter(data, this.attr.table);
-          return Array.isArray(data) ? dbWriter.insertAll() : dbWriter.insert();
-        }
-    ));
+          return Array.isArray(data)
+            ? dbWriter.insertAll()
+            : dbWriter.insert();
+        })
+    );
 
     console.log(`💾 Inserted data into ${this.attr.table}`);
   }
 
-  /** 🔹 Gracefully close page */
+  /** 🔹 Gracefully close all tabs */
   async close() {
     try {
-      if (this.pageInstance) 
-        await this.pageInstance.close();
+      for (const [key, page] of Object.entries(this.pageInstances)) {
+        if (page && !page.isClosed()) {
+          await page.close();
+          console.log(`🧹 Closed ${key} page for ${this.attr.exchange}`);
+        }
+      }
       await this.pageManager.close();
-      console.log(`🧹 Closed page for ${this.attr.exchange}`);
-    } 
-    catch (err) {
+    } catch (err) {
       console.error(`❌ Error closing page for ${this.attr.exchange}:`, err.message);
     }
   }

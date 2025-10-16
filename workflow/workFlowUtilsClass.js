@@ -13,63 +13,85 @@ const {
 class WorkFlowUtils {
   constructor(browser) {
     this.browser = browser;
-    this.page1 = null;
-    this.page2 = null;
+    this.pages = {};
   }
 
   /** Create both pages concurrently */
   async createPages() {
     // initate seperatly else race condition creates two seperate browser instances
-    this.page1 = await this.browser.createPage(EXCHANGE);
-    this.page2 = await this.browser.createPage(EXCHANGE2);
+    // seperate page for exchange 1 (main page)
+    const pageExchange_1 = await this.browser.createPage(EXCHANGE);
+    // seperate page for exchange 2 (main page)
+    const pageExchange2_1 = await this.browser.createPage(EXCHANGE2);
+
+    Object.assign(this.pages,{pageExchange_1,pageExchange2_1});
+    // this.pages = {pageExchange_1 : pageExchange_1,pageExchange2_1 : pageExchange2_1} ;
   }
 
   /** Set up attributes for both pages */
   async insertAttr() {
+    const {pageExchange_1 : page1, pageExchange2_1 : page2} = this.pages;
+    
     await Promise.all([
-      this.page1.buildAttr(PAGE_URL_1, GET_API_1, PAGE_ACTIVE_URL_1, GET_API_ACTIVE_1, null, DYNAMO_DB_TABLE_1),
-      this.page2.buildAttr(PAGE_URL_2, GET_API_2, PAGE_ACTIVE_URL_2, GET_API_ACTIVE_2, GET_API_FUTURE_2, DYNAMO_DB_TABLE_2),
+      page1.buildAttr(PAGE_URL_1, GET_API_1, PAGE_ACTIVE_URL_1, GET_API_ACTIVE_1, null, DYNAMO_DB_TABLE_1),
+      page2.buildAttr(PAGE_URL_2, GET_API_2, PAGE_ACTIVE_URL_2, GET_API_ACTIVE_2, GET_API_FUTURE_2, DYNAMO_DB_TABLE_2),
+    ]);
+
+      // ✅ Initialize Puppeteer tabs right after setting up URLs
+    await Promise.all([
+      page1.initAllPages(),
+      page2.initAllPages(),
     ]);
   }
-
+  
   /** Build expiry data */
   async buildExpiry() {
+    const {pageExchange_1 : page1, pageExchange2_1 : page2} = this.pages;
+    
     await Promise.all([
-      this.page1.buildExpiry(),
-      this.page2.buildExpiry(),
+      page1.buildExpiry(),
+      page2.buildExpiry(),
     ]);
   }
-
+  
   /** Fetch options concurrently */
   async fetchOptions() {
+    const {pageExchange_1 : page1, pageExchange2_1 : page2} = this.pages;
+    
     await Promise.all([
-      this.page1.fetchOptions(),
-      this.page2.fetchOptions(),
+      page1.fetchOptions(),
+      page2.fetchOptions(),
     ]);
-
+    
   }
-
+  
   async fetchOtherData() {
+    const {pageExchange_1 : page1, pageExchange2_1 : page2} = this.pages;
     // wait for pages to build then cache be used
     await Promise.all([
-      this.page1.fetchOtherData(),
-      this.page2.fetchOtherData()
+      page1.fetchOtherData(),
+      page2.fetchOtherData()
     ]);
   }
   
   /** Compress data */
   async getCompressed() {
+    const {pageExchange_1 : page1, pageExchange2_1 : page2} = this.pages;
+    
     await Promise.all([
-      this.page1.getCompressed(),
-      this.page2.getCompressed(),
+      page1.getCompressed(),
+      page2.getCompressed(),
     ]);
   }
-
+  
+  // debugger;
   /** Insert results into DB */
   async insertIntoDB() {
+    const {pageExchange_1 : page1, pageExchange2_1 : page2} = this.pages;
+    
     await Promise.all([
-      this.page1.insertIntoDB(),
-      this.page2.insertIntoDB(),
+      page1.insertIntoDB(),
+      page2.insertIntoDB(),
     ]);
   }
 

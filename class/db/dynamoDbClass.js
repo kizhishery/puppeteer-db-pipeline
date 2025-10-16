@@ -18,7 +18,7 @@ class DynamoInserter {
       await this.client.send(
         new PutItemCommand({
           TableName: this.tableName,
-          Item: marshall(item, { convertClassInstanceToMap: true }),
+          Item: marshall(item),
         })
       );
     } catch (err) {

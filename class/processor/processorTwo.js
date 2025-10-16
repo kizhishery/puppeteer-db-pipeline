@@ -8,6 +8,7 @@ class ProcessorTwo extends BaseProcessor {
   }
 
   process() {
+    // debugger;
     const {
       attr: { exchange },
       data: {
@@ -30,8 +31,8 @@ class ProcessorTwo extends BaseProcessor {
       Handler: OptionChainParentTWO,
     });
 
-    const active = new MostActiveContractTWO(mostActive,timestamp);
-    const future = new FutureTWO(firstFuture,timestamp);
+    const active = new MostActiveContractTWO(mostActive,timestamp).getData();
+    const future = new FutureTWO(firstFuture,timestamp).getData();
 
     return { current, next, active, future};
   }

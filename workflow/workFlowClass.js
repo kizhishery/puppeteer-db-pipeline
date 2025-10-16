@@ -5,8 +5,7 @@ class WorkFlow {
   static instance = null;
   
   constructor(browser) {
-    this.browser = browser;
-    this.utils = new WorkFlowUtils(this.browser);
+    this.utils = new WorkFlowUtils(browser);
   }
   
   static getInstance(browser) {
@@ -19,12 +18,13 @@ class WorkFlow {
   
   // ✅ Check if all pages are initialized and cached
   arePagesCached() {
-    const { page1, page2 } = this.utils;
+    const { pages : { page1, page2 } } = this.utils;
     const cache = page1 != null && page2 != null;
     return cache;
   }
 
   async run() {
+    // debugger;
     console.time("🌐 Total Workflow");
     
     try {
@@ -50,7 +50,7 @@ class WorkFlow {
       await this.utils.getCompressed();
       console.timeEnd("🌐 Compression");
       
-      // debugger;
+      debugger;
       console.time("🌐 DB Insertion");
       await this.utils.insertIntoDB();
       console.timeEnd("🌐 DB Insertion");
@@ -103,9 +103,10 @@ class WorkFlow {
   }
   _injectPages() {
     if (! this._isLambda()) {
-      const { page1, page2 } = require('../data');
+      const { page1 : pageExchange_1 , page2 : pageExchange2_1 } = require('../data');
+      const { pages } = this.utils;
       debugger;
-      Object.assign(this.utils, {page1,page2}); 
+      Object.assign(pages, { pageExchange_1, pageExchange2_1 });
       debugger;
     }
   }

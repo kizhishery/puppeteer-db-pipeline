@@ -9,6 +9,7 @@ class Processor {
   }
 
   process() {
+    // debugger;
     if (!this.data || !this.data.data) {
       return { current: null, next: null, active : null, future : null };
     }
