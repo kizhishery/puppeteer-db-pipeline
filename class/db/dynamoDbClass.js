@@ -32,7 +32,7 @@ async insert() {
 
   // Skip if INSERT is false or payload is empty
   if (!INSERT || Object.keys(this.payload).length === 0) {
-    debugger
+    // debugger
     console.log("🏭 Skipped insertion | INSERT = false");
     return;
   }
@@ -46,7 +46,7 @@ async insert() {
   async insertAll(concurrency = 20) {
     // debugger;
     if (!this.payload.length || !INSERT) {
-      debugger;
+      // debugger;
       console.log("🏭 skipped insertion | INSERT = false");
       return;
     }

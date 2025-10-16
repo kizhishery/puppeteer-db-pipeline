@@ -69,19 +69,12 @@ class Page {
 
   /** 🔹 Handle navigation separately */
   async navigatePage(page, pageURL) {
-    let exchange = this.attr.exchange === EXCHANGE;
-    // Choose appropriate waitUntil mode
-    const waitUntil = exchange ? "networkidle2" : "";
-
     try {
-      if (exchange) {
-        await page.goto(pageURL, { waitUntil, timeout: 30_000 });
-      } else {
-        await page.goto(pageURL, { timeout: 30_000 });
-      }
+      await page.goto(pageURL, { waitUntil : "domcontentloaded", timeout: 30_000 });
 
       console.log(`🌐 Navigated to ${pageURL} for ${this.attr.exchange}`);
-    } catch (err) {
+    } 
+    catch (err) {
       console.warn(`⚠️ Navigation warning at ${pageURL}: ${err.message}`);
     }
   }
@@ -110,9 +103,11 @@ class Page {
       this.attr.cookieManager = new CookieManager(page);
       await this.attr.cookieManager.fetchCookies();
     }
-
+    
     if (!this.apiFetcher) {
+      console.time("🌐 fetch api");
       this.apiFetcher = new ApiFetcher(page, this.attr.cookieManager);
+      console.timeEnd("🌐 fetch api");
     }
   }
 
