@@ -14,8 +14,8 @@ class MostActiveContractTWO {
     
     this.ts = this.#getTimestamp(timestamp)
     this.ttl = this.#getTTL();
-    this.key = "active";
     this.ul = this.ul.substr(0,6)
+    this.key = `A | ${this.ul}`;
   }
 
   #getTimestamp(time) {

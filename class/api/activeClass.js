@@ -12,9 +12,9 @@ class MostActiveContractONE {
       this[alias] = data[originalKey];
     }
     
-    this.key = "active";
     this.ts = this.#getTimestamp(timestamp);
     this.ttl = this.#getTTL();
+    this.key = `A | ${this.ul}`;
   }
 
   #getTimestamp(time) {

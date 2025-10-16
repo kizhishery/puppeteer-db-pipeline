@@ -32,7 +32,7 @@ class OptionChainONE {
     this.str = data.strikePrice ?? 0;
     
     this.ttl = this.#getTTL();
-    this.key = `${this.str} | ${this.exp}`;
+    this.key = `O | ${this.str} | ${this.exp}`;
     
     this.ce = new OptionData(data.CE ?? {});
     this.pe = new OptionData(data.PE ?? {});

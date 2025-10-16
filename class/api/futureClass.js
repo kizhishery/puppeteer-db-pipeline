@@ -28,7 +28,7 @@ class FutureONE {
     // Keep timestamp and a simple ID/key if needed
     this.ts = this.#getTimestamp(timestamp);
     this.exp = this.#getExpiry()
-    this.key = `${this.ul} | ${this.exp}`;
+    this.key = `F | ${this.ul} | ${this.exp}`;
     this.tto = Math.round(this.tto,2)
     this.ttl = this.#getTTL();
   }

@@ -32,7 +32,7 @@ class FutureTWO {
     this.ts = this.#getTimestamp(timestamp);
     this.exp = this.#getExpiry();
     this.ul = this.ul.substr(0,6);
-    this.key = `${this.ul} | ${this.exp}`;
+    this.key = `F | ${this.ul} | ${this.exp}`;
     this.ttl = this.#getTTL();
   }
   

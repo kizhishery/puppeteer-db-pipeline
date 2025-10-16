@@ -149,15 +149,17 @@ class Page {
 
   /** 🔹 Insert processed data into DynamoDB */
   async insertIntoDB() {
-    // const { current, next , future, active } = this.compressed;
-    const compressedObj = this.compressed;
-
+    const {  future, active, current, next } = this.compressed;
+    // const compressedObj = this.compressed;
+    // debugger;
     
     await Promise.all(
-      Object.values(compressedObj)
+      Object.values(this.compressed)
         .filter(Boolean)
-        .map(data => new DynamoInserter(data, this.attr.table)
-        .insertAll()
+        .map(data => {
+          const dbWriter = new DynamoInserter(data, this.attr.table);
+          return Array.isArray(data) ? dbWriter.insertAll() : dbWriter.insert();
+        }
     ));
 
     console.log(`💾 Inserted data into ${this.attr.table}`);

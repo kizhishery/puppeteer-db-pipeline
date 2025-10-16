@@ -48,7 +48,7 @@ class OptionChainTWO {
     this.ttl = this.#getTTL();
     
     // key = strike | expiry
-    this.key = `${this.str} | ${this.exp}`;
+    this.key = `O | ${this.str} | ${this.exp}`;
 
     // CE = all fields prefixed with C_, PE = remaining
     this.ce = new OptionData(data);
