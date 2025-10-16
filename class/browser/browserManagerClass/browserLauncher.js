@@ -88,9 +88,9 @@ class BrowserLauncher {
 
   // Force kill browser process
   static forceKillBrowser() {
-    const B = BrowserLauncher.Browser;
-    if (B && B.process) {
-      const pid = B.process().pid;
+    const browser = BrowserLauncher.Browser;
+    if (browser && browser.process) {
+      const pid = browser.process().pid;
       if (pid) {
         process.kill(pid, 'SIGKILL');
         console.log(`⚡ Browser process ${pid} killed forcefully.`);

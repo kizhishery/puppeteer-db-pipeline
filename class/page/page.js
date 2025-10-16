@@ -149,8 +149,7 @@ class Page {
 
   /** 🔹 Insert processed data into DynamoDB */
   async insertIntoDB() {
-    const {  future, active, current, next } = this.compressed;
-    // const compressedObj = this.compressed;
+    const { current, next , future, active } = this.compressed;
     // debugger;
     
     await Promise.all(

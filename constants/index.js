@@ -6,7 +6,7 @@ if (!process.env.AWS_LAMBDA_FUNCTION_NAME && !process.env.LAMBDA_TASK_ROOT) {
 // loop process locally
 const ITERATION = 1;
 // db
-const TTL=0.1, INSERT= true, MAX_CONNECTIONS = 40;
+const TTL=0.1, INSERT=false;
 
 // base url
 const {
@@ -27,7 +27,7 @@ module.exports = {
   BASE_URL,BASE_URL_2,
   GET_API_1,GET_API_2,
   PAGE_URL_1,PAGE_URL_2,
-  TTL,INSERT,MAX_CONNECTIONS,
+  TTL,INSERT,
   GET_API_ACTIVE_1,GET_API_ACTIVE_2,
   DYNAMO_DB_TABLE_1,DYNAMO_DB_TABLE_2,
   PAGE_ACTIVE_URL_1,PAGE_ACTIVE_URL_2

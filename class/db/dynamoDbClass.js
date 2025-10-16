@@ -32,8 +32,8 @@ async insert() {
 
   // Skip if INSERT is false or payload is empty
   if (!INSERT || Object.keys(this.payload).length === 0) {
-    debugger
-    console.log("🏭 Skipped insertion | INSERT = false or payload empty");
+    // debugger
+    console.log("🏭 Skipped insertion | INSERT = false");
     return;
   }
 
