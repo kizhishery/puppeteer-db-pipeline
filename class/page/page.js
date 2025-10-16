@@ -73,7 +73,7 @@ class Page {
       this.apiFetcher && this.attr.cookieManager && page.url() === pageURL;
 
     if (!alreadyReady) {
-      await page.goto(pageURL, { waitUntil: 'networkidle2', timeout: 300000 });
+      await page.goto(pageURL, { waitUntil: 'networkidle2', timeout: 30_000 });
       await this.initDependencies(page);
     }
   }
