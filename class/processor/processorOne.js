@@ -33,8 +33,8 @@ class ProcessorOne extends BaseProcessor {
     const filterFuture = value.find(val => val.instrumentType == "FUTIDX");
     const filterVolume = volume.find(val => val.instrumentType == "OPTIDX");
 
-    const future = new FutureONE(filterFuture,timestamp);
-    const active = new MostActiveContractONE(filterVolume, timestamp);
+    const future = new FutureONE(filterFuture,timestamp).getData();
+    const active = new MostActiveContractONE(filterVolume, timestamp).getData();
     
     return { current, next, active, future };
   }
