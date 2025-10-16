@@ -6,7 +6,11 @@ const runLambda = async () => {
 
   try {
     // Attempt workflow run
-    return await main();
+    await main();
+    return {
+      status : 200,
+      message : "Success"
+    }
   } catch (err) {
     console.error('❌ Workflow failed:', err);
 

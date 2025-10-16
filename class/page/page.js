@@ -1,8 +1,12 @@
-const { Expiry } = require('../expiry/expiryClass');
-const { DynamoInserter } = require('../db/dynamoDbClass');
-const { Processor } = require('../processor/processorClass');
-const { EXCHANGE, BASE_URL, BASE_URL_2 } = require('../../constants');
-const { BrowserPageManager, CookieManager, ApiFetcher } = require('./pageWrapperClass');
+const { Expiry } = require("../expiry/expiryClass");
+const { DynamoInserter } = require("../db/dynamoDbClass");
+const { Processor } = require("../processor/processorClass");
+const { EXCHANGE, BASE_URL, BASE_URL_2 } = require("../../constants");
+const {
+  BrowserPageManager,
+  CookieManager,
+  ApiFetcher,
+} = require("./pageWrapperClass");
 
 class Page {
   constructor(browser, exchange) {
@@ -17,8 +21,8 @@ class Page {
 
     this.arr = { expiry: [], expiryURL: [] };
     this.page = { expiryPage: null, activePage: null };
-    this.api = { expiryApi: null, activeApi: null, futureApi : null };
-    this.data = { current: [], next: [], active: [], future : []};
+    this.api = { expiryApi: null, activeApi: null, futureApi: null };
+    this.data = { current: [], next: [], active: [], future: [] };
     this.compressed = {};
 
     this.pageInstances = {}; // ✅ store multiple prepared Puppeteer pages
@@ -29,7 +33,9 @@ class Page {
     const browser = this.pageManager.browser;
 
     if (!this.page.expiryPage || !this.page.activePage) {
-      console.warn('⚠️ Page URLs not yet assigned in buildAttr() — skipping initAllPages()');
+      console.warn(
+        "⚠️ Page URLs not yet assigned in buildAttr() — skipping initAllPages()"
+      );
       return;
     }
 
@@ -54,26 +60,46 @@ class Page {
   }
 
   /** ✅ Prepare one of the pre-created pages (no recreation) */
-  /** ✅ Prepare one of the pre-created pages (no recreation) */
+  /** 🔹 Identify which pre-created page key to use */
+  getPageKey(pageURL) {
+    if (pageURL === this.page.expiryPage) return "expiry";
+    if (pageURL === this.page.activePage) return "active";
+    return null;
+  }
+
+  /** 🔹 Handle navigation separately */
+  async navigatePage(page, pageURL) {
+    let exchange = this.attr.exchange === EXCHANGE;
+    // Choose appropriate waitUntil mode
+    const waitUntil = exchange ? "networkidle2" : "";
+
+    try {
+      if (exchange) {
+        await page.goto(pageURL, { waitUntil, timeout: 30_000 });
+      } else {
+        await page.goto(pageURL, { timeout: 30_000 });
+      }
+
+      console.log(`🌐 Navigated to ${pageURL} for ${this.attr.exchange}`);
+    } catch (err) {
+      console.warn(`⚠️ Navigation warning at ${pageURL}: ${err.message}`);
+    }
+  }
+
+  /** 🔹 Prepare a page instance (uses getPageKey + navigatePage) */
   async preparePage(pageURL) {
-    const pageKey =
-      pageURL === this.page.expiryPage
-        ? 'expiry'
-        : pageURL === this.page.activePage
-        ? 'active'
-        : null;
+    const pageKey = this.getPageKey(pageURL);
 
     if (!pageKey || !this.pageInstances[pageKey]) {
       throw new Error(`No pre-created page instance found for URL: ${pageURL}`);
     }
 
     const page = this.pageInstances[pageKey];
-
     const alreadyReady =
       this.apiFetcher && this.attr.cookieManager && page.url() === pageURL;
 
     if (!alreadyReady) {
-      await page.goto(pageURL, { waitUntil: 'networkidle2', timeout: 30_000 });
+      await this.navigatePage(page, pageURL);
       await this.initDependencies(page);
     }
   }
@@ -92,9 +118,13 @@ class Page {
 
   /** ✅ Prepare both expiry and active pages before fetching */
   async prepareAllPages() {
-    const pagesToPrepare = [this.page.expiryPage, this.page.activePage].filter(Boolean);
-    await Promise.all(pagesToPrepare.map(url => this.preparePage(url)));
-    console.log(`✅ Prepared both expiry & active pages for ${this.attr.exchange}`);
+    const pagesToPrepare = [this.page.expiryPage, this.page.activePage].filter(
+      Boolean
+    );
+    await Promise.all(pagesToPrepare.map((url) => this.preparePage(url)));
+    console.log(
+      `✅ Prepared both expiry & active pages for ${this.attr.exchange}`
+    );
   }
 
   /** 🔹 Fetch expiry data (with retries) */
@@ -105,12 +135,13 @@ class Page {
         await this.prepareAllPages();
         return await this.apiFetcher.fetch(this.api.expiryApi);
       } catch (err) {
-        console.warn(`⚠️ fetchExpiry attempt ${attempt} failed: ${err.message}`);
+        console.warn(
+          `⚠️ fetchExpiry attempt ${attempt} failed: ${err.message}`
+        );
         if (attempt === retries) throw err;
       }
     }
   }
-
 
   /** 🔹 Fetch options for current and next expiry */
   async fetchOptions() {
@@ -118,10 +149,12 @@ class Page {
 
     await this.preparePage(this.page.expiryPage);
 
-    const optionUrls = this.arr.expiry.map(date => this.buildUrl(date, this.attr.exchange));
+    const optionUrls = this.arr.expiry.map((date) =>
+      this.buildUrl(date, this.attr.exchange)
+    );
 
     const [current, next] = await Promise.all(
-      optionUrls.map(url => this.apiFetcher.fetch(url))
+      optionUrls.map((url) => this.apiFetcher.fetch(url))
     );
 
     Object.assign(this.data, { current, next });
@@ -163,7 +196,6 @@ class Page {
     }
   }
 
-
   /** 🔹 Fetch and process expiry list */
   async getExpiry() {
     const rawData = await this.fetchExpiry();
@@ -175,7 +207,7 @@ class Page {
   /** 🔹 Build expiry URLs after fetching expiry dates */
   async buildExpiry() {
     await this.getExpiry();
-    this.arr.expiryURL = this.arr.expiry.map(date =>
+    this.arr.expiryURL = this.arr.expiry.map((date) =>
       this.buildUrl(date, this.attr.exchange)
     );
   }
@@ -184,7 +216,9 @@ class Page {
   buildUrl(date, exchange) {
     return exchange === EXCHANGE
       ? `${BASE_URL}${encodeURIComponent(date)}`
-      : `${BASE_URL_2}?Expiry=${encodeURIComponent(date)}&scrip_cd=1&strprice=0`;
+      : `${BASE_URL_2}?Expiry=${encodeURIComponent(
+          date
+        )}&scrip_cd=1&strprice=0`;
   }
 
   /** 🔹 Process data into compressed format */
@@ -199,11 +233,9 @@ class Page {
     await Promise.all(
       Object.values(this.compressed)
         .filter(Boolean)
-        .map(data => {
+        .map((data) => {
           const dbWriter = new DynamoInserter(data, this.attr.table);
-          return Array.isArray(data)
-            ? dbWriter.insertAll()
-            : dbWriter.insert();
+          return Array.isArray(data) ? dbWriter.insertAll() : dbWriter.insert();
         })
     );
 
@@ -221,7 +253,10 @@ class Page {
       }
       await this.pageManager.close();
     } catch (err) {
-      console.error(`❌ Error closing page for ${this.attr.exchange}:`, err.message);
+      console.error(
+        `❌ Error closing page for ${this.attr.exchange}:`,
+        err.message
+      );
     }
   }
 }

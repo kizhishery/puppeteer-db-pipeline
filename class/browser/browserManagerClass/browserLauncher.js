@@ -43,11 +43,12 @@ class BrowserLauncher {
       args: [
         '--no-sandbox', 
         '--disable-setuid-sandbox',
-        // '--start-maximized', 
-        // '--auto-open-devtools-for-tabs', 
+        '--start-maximized', 
+        '--auto-open-devtools-for-tabs', 
       ],
-      headless: 'new',
-      // devtools : true
+      // headless: 'new',
+      headless: false,
+      devtools : true
     };
     console.log('🚀 Launching local browser...');
     return puppeteer.launch(launchOptions);
