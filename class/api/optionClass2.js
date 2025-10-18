@@ -74,6 +74,7 @@ class OptionChainTWO {
     const obj = {
       ts: this.ts,
       exp: this.exp,
+      ttl: this.ttl,
       str: this.str,
       key: this.key,
       ce: { ...this.ce },

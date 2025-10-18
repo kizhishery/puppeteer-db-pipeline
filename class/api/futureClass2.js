@@ -61,6 +61,7 @@ class FutureTWO {
     const items = {
       ts: this.ts,
       exp: this.exp,
+      ttl: this.ttl,
       ul: this.ul,
       key: this.key,
       ul: this.ul,

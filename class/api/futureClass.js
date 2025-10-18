@@ -52,6 +52,7 @@ class FutureONE {
     const items = {
       ts: this.ts,
       key: this.key,
+      ttl: this.ttl,
       exp: this.exp,
       ulv: this.ulv,
       ul: this.ul,
