@@ -1,4 +1,4 @@
-const { TTL } = require('../../constants');
+const { TTL, DYNAMO_DB_TABLE_FUTURE } = require('../../constants');
 
 class FutureONE {
   constructor(data,timestamp) {
@@ -61,6 +61,7 @@ class FutureONE {
       tto: this.tto,
       oi: this.oi,
       ulv: this.ulv,
+      table: DYNAMO_DB_TABLE_FUTURE
     };
 
     return items;

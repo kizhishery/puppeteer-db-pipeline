@@ -1,4 +1,4 @@
-const { TTL } = require('../../constants');
+const { TTL, DYNAMO_DB_TABLE_OPTION } = require('../../constants');
 
 class OptionData {
   constructor(data) {
@@ -71,6 +71,7 @@ class OptionChainONE {
       ulv: this.ulv,
       ce: { ...this.ce },
       pe: { ...this.pe },
+      table : DYNAMO_DB_TABLE_OPTION
     };
   }
 }

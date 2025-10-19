@@ -1,4 +1,4 @@
-const { TTL } = require('../../constants');
+const { TTL, DYNAMO_DB_TABLE_ACTIVE } = require('../../constants');
 
 class MostActiveContractTWO {
   
@@ -40,7 +40,8 @@ class MostActiveContractTWO {
         ttl : this.ttl,
         key: this.key,
         str : this.str,
-        ul : this.ul
+        ul : this.ul,
+        table : DYNAMO_DB_TABLE_ACTIVE
     }
       
     return items;

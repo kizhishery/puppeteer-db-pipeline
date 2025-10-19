@@ -2,7 +2,6 @@
 
 const {
   EXCHANGE, EXCHANGE2,
-  DYNAMO_DB_TABLE_1, DYNAMO_DB_TABLE_2,
   PAGE_URL_1, PAGE_URL_2,
   PAGE_ACTIVE_URL_1, PAGE_ACTIVE_URL_2,
   GET_API_1, GET_API_2,
@@ -33,8 +32,8 @@ class WorkFlowUtils {
     const {pageExchange_1 : page1, pageExchange2_1 : page2} = this.pages;
     
     await Promise.all([
-      page1.buildAttr(PAGE_URL_1, GET_API_1, PAGE_ACTIVE_URL_1, GET_API_ACTIVE_1, null, DYNAMO_DB_TABLE_1),
-      page2.buildAttr(PAGE_URL_2, GET_API_2, PAGE_ACTIVE_URL_2, GET_API_ACTIVE_2, GET_API_FUTURE_2, DYNAMO_DB_TABLE_2),
+      page1.buildAttr(PAGE_URL_1, GET_API_1, PAGE_ACTIVE_URL_1, GET_API_ACTIVE_1, null),
+      page2.buildAttr(PAGE_URL_2, GET_API_2, PAGE_ACTIVE_URL_2, GET_API_ACTIVE_2, GET_API_FUTURE_2),
     ]);
 
       // ✅ Initialize Puppeteer tabs right after setting up URLs

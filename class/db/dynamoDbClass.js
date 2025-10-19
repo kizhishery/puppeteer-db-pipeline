@@ -3,9 +3,8 @@ const { marshall } = require("@aws-sdk/util-dynamodb");
 const { DynamoDBClient, PutItemCommand } = require("@aws-sdk/client-dynamodb");
 
 class DynamoInserter {
-  constructor(payload, tableName) {
+  constructor(payload) {
     this.payload = payload;
-    this.tableName = tableName;
 
     // Single DynamoDB client
     this.client = new DynamoDBClient({ region: process.env.AWS_REGION });
@@ -13,12 +12,13 @@ class DynamoInserter {
 
   // Insert a single item
   async #insertItem(item) {
-    // debugger;
+    const { table, ...rest } = item;
+
     try {
       await this.client.send(
         new PutItemCommand({
-          TableName: this.tableName,
-          Item: marshall(item),
+          TableName: table,
+          Item: marshall(rest),
         })
       );
     } catch (err) {

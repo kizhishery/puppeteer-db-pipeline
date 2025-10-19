@@ -13,11 +13,7 @@ class Page {
     this.pageManager = new BrowserPageManager(browser);
     this.apiFetcher = null;
 
-    this.attr = {
-      exchange,
-      cookieManager: null,
-      table: null,
-    };
+    this.attr = {exchange, cookieManager: null };
 
     this.arr = { expiry: null, expiryURL: null };
     this.page = { expiryPage: null, activePage: null };
@@ -53,8 +49,7 @@ class Page {
   }
 
   /** ✅ Build attributes for this page */
-  buildAttr(expiryPage, expiryApi, activePage, activeApi, futureApi, table) {
-    Object.assign(this.attr, { table });
+  buildAttr(expiryPage, expiryApi, activePage, activeApi, futureApi) {
     Object.assign(this.api, { expiryApi, activeApi, futureApi });
     Object.assign(this.page, { expiryPage, activePage });
   }
@@ -258,12 +253,12 @@ async navigatePage(page, pageURL) {
       Object.values(this.compressed)
         .filter(Boolean)
         .map((data) => {
-          const dbWriter = new DynamoInserter(data, this.attr.table);
+          const dbWriter = new DynamoInserter(data);
           return Array.isArray(data) ? dbWriter.insertAll() : dbWriter.insert();
         })
     );
 
-    console.log(`💾 Inserted data into ${this.attr.table}`);
+    console.log(`💾 Inserted data into table`);
   }
 
   /** 🔹 Gracefully close all tabs */
