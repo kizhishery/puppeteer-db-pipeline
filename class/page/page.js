@@ -1,7 +1,7 @@
 const { Expiry } = require("../expiry/expiryClass");
 const { DynamoInserter } = require("../db/dynamoDbClass");
 const { Processor } = require("../processor/processorClass");
-const { EXCHANGE, BASE_URL, BASE_URL_2, GET_API_1, GET_API_2, GET_API_ACTIVE_1, GET_API_ACTIVE_2 } = require("../../constants");
+const { EXCHANGE, BASE_URL, BASE_URL_2 } = require("../../constants");
 const {
   BrowserPageManager,
   CookieManager,
