@@ -13,8 +13,6 @@ class OptionData {
       bQ: "buyQuantity1",
       sP: "sellPrice1",
       sQ: "sellQuantity1",
-      ul: "underlying",
-      ulv: "underlyingValue",
     };
 
     for (const [prop, key] of Object.entries(mapping)) {
@@ -27,29 +25,38 @@ class OptionData {
 
 class OptionChainONE {
   constructor(data, timestamp) {
-    this.ts = this.#getTimestamp(timestamp);
-    this.exp = this.#getExpiry(data.expiryDates);
+    this.ts = this.getTimestamp(timestamp);
+    this.exp = this.getExpiry(data.expiryDates);
     this.str = data.strikePrice ?? 0;
-    
-    this.ttl = this.#getTTL();
+    this.ttl = this.getTTL();
     this.key = `O | ${this.str} | ${this.exp}`;
-    
-    this.ce = new OptionData(data.CE ?? {});
-    this.pe = new OptionData(data.PE ?? {});
+
+    // Extract underlying data just once
+    const ceData = data.CE ?? {};
+    const peData = data.PE ?? {};
+
+    this.ul = ceData.underlying ?? peData.underlying ?? null;
+    this.ulv = ceData.underlyingValue ?? peData.underlyingValue ?? null;
+
+    delete ceData.underlying;
+    delete ceData.underlyingValue;
+    delete peData.underlying;
+    delete peData.underlyingValue;
+
+    this.ce = new OptionData(ceData);
+    this.pe = new OptionData(peData);
   }
 
-  #getTimestamp(time) {
-    let timestamp = new Date(time + ' UTC').toISOString();
-    return timestamp;
+  getTimestamp(time) {
+    return new Date(time + ' UTC').toISOString();
   }
 
-  #getExpiry(time) {
-    let expiry = new Date(time + ' UTC').toISOString().split('T')[0] ?? null;
-    return expiry;
+  getExpiry(time) {
+    return (new Date(time + ' UTC').toISOString().split('T')[0]) ?? null;
   }
 
-  #getTTL() {
-    let ttl = Math.floor(new Date(this.ts).getTime() / 1000);
+  getTTL() {
+    const ttl = Math.floor(new Date(this.ts).getTime() / 1000);
     return Math.floor(ttl + TTL);
   }
 
@@ -59,14 +66,15 @@ class OptionChainONE {
       key: this.key,
       exp: this.exp,
       str: this.str,
+      ttl: this.ttl,
+      ul: this.ul,
+      ulv: this.ulv,
       ce: { ...this.ce },
       pe: { ...this.pe },
-      ttl: this.ttl,
     };
   }
 }
 
-// Parent class that holds multiple OptionChainONE children
 class OptionChainParent {
   constructor(dataArray, timestamp) {
     this.arr = dataArray.map(data => new OptionChainONE(data, timestamp));

@@ -19,10 +19,15 @@ const workflow_inject = () => {
 const main = async () => {
   const { workflow } = workflow_inject();
 
+  // debugger;
   if (workflow.arePagesCached()) {
     console.log('⚡ Cached pages detected — running cacheRun()...');
     await workflow.cacheRun();
-  } else {
+  } 
+  else {
+    const { utils : { pages }} = workflow;
+    console.dir(pages,{length : 3});
+
     console.log('🚀 Running full workflow...');
     await workflow.run();
   }

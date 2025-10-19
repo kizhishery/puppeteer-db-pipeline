@@ -42,10 +42,12 @@ class WorkFlowUtils {
       page1.initAllPages(),
       page2.initAllPages(),
     ]);
+
   }
   
   /** Build expiry data */
   async buildExpiry() {
+    
     const {pageExchange_1 : page1, pageExchange2_1 : page2} = this.pages;
     
     await Promise.all([
@@ -56,6 +58,8 @@ class WorkFlowUtils {
   
   /** Fetch options concurrently */
   async fetchOptions() {
+    // debugger;
+    
     const {pageExchange_1 : page1, pageExchange2_1 : page2} = this.pages;
     
     await Promise.all([
@@ -84,9 +88,10 @@ class WorkFlowUtils {
     ]);
   }
   
-  // debugger;
   /** Insert results into DB */
   async insertIntoDB() {
+    // debugger;
+
     const {pageExchange_1 : page1, pageExchange2_1 : page2} = this.pages;
     
     await Promise.all([

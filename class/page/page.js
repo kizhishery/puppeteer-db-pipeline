@@ -1,7 +1,7 @@
 const { Expiry } = require("../expiry/expiryClass");
 const { DynamoInserter } = require("../db/dynamoDbClass");
 const { Processor } = require("../processor/processorClass");
-const { EXCHANGE, BASE_URL, BASE_URL_2 } = require("../../constants");
+const { EXCHANGE, BASE_URL, BASE_URL_2, GET_API_1, GET_API_2, GET_API_ACTIVE_1, GET_API_ACTIVE_2 } = require("../../constants");
 const {
   BrowserPageManager,
   CookieManager,
@@ -68,16 +68,49 @@ class Page {
   }
 
   /** 🔹 Handle navigation separately */
-  async navigatePage(page, pageURL) {
-    try {
-      await page.goto(pageURL, { waitUntil : "domcontentloaded", timeout: 30_000 });
+  /** 🔹 Optimized navigation with smart request blocking & safe timeout */
+/** 🔹 Optimized Puppeteer navigation with request interception */
+  async #setupInterception(page) {
+    if (page._interceptionSet) return; // ✅ prevent re-adding listeners
 
-      console.log(`🌐 Navigated to ${pageURL} for ${this.attr.exchange}`);
-    } 
-    catch (err) {
-      console.warn(`⚠️ Navigation warning at ${pageURL}: ${err.message}`);
-    }
+    await page.setRequestInterception(true);
+
+    page.on('request', (req) => {
+      const url = req.url();
+      const allowDomains = ['bseindia.com', 'nseindia.com'];
+      const disallowDomains = ['RealTimeBseIndiaAPI','.js'];
+
+      if (
+        !allowDomains.some((d) => url.includes(d)) ||
+        disallowDomains.some((d) => url.includes(d))
+      ) {
+        req.abort();
+      } else {
+        req.continue();
+      }
+    });
+
+    page._interceptionSet = true;
   }
+
+async navigatePage(page, pageURL) {
+  try {
+    // 🧱 Request interception only once
+    await this.#setupInterception(page);
+
+    // 🕐 Safe navigation
+    await page.goto(pageURL, {
+      waitUntil: 'domcontentloaded',
+      timeout: 30_000,
+    });
+
+  } catch (err) {
+    console.warn(`⚠️ Navigation warning at ${pageURL}: ${err.message}`);
+    return false;
+  }
+}
+
+
 
   /** 🔹 Prepare a page instance (uses getPageKey + navigatePage) */
   async preparePage(pageURL) {
@@ -103,11 +136,9 @@ class Page {
       this.attr.cookieManager = new CookieManager(page);
       await this.attr.cookieManager.fetchCookies();
     }
-    
+
     if (!this.apiFetcher) {
-      console.time("🌐 fetch api");
       this.apiFetcher = new ApiFetcher(page, this.attr.cookieManager);
-      console.timeEnd("🌐 fetch api");
     }
   }
 
@@ -125,6 +156,7 @@ class Page {
       try {
         // ✅ prepare both pages before fetching
         await this.prepareAllPages();
+        // debugger;
         return await this.apiFetcher.fetch(this.api.expiryApi);
       } catch (err) {
         console.warn(

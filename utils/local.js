@@ -2,7 +2,7 @@ const { ITERATION } = require('../constants');
 // runLocal.js
 const { main, workflow_inject } = require('./main');
 
-const runLocal = async (delay = 1000) => {
+const runLocal = async (delay =  1000) => {
   console.log('🚀 Running workflow locally...');
 
   // Initialize browser + workflow once
