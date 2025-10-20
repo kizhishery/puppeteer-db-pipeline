@@ -1,36 +1,29 @@
-name: 🚀 Deploy Lambda (no npm install)
+name: 🚀 Deploy AWS Lambda
 
 on:
   push:
     branches:
       - main
-  workflow_dispatch:  # optional manual trigger
-
-permissions:
-  contents: read
 
 jobs:
   deploy:
-    name: Deploy to AWS Lambda
     runs-on: ubuntu-latest
 
     steps:
-      - name: 🧾 Checkout Repository
+      - name: 🧭 Checkout repository
         uses: actions/checkout@v4
 
-      - name: 🗜️ Zip Lambda Package (exclude unnecessary files)
-        run: |
-          zip -r lambda.zip . \
-            -x "*.git*" "*.github*" "data/*" "node_modules/*" "README.md" ".env*" "package*.json"
+      - name: 🗜️ Zip Lambda code
+        run: zip -r lambda.zip . -x "*.git*" "node_modules*" "trivial" "data"
 
-      - name: ☁️ Configure AWS Credentials
+      - name: ☁️ Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ap-south-1
 
-      - name: 🚀 Deploy to AWS Lambda
+      - name: 🚀 Deploy Lambda
         run: |
           aws lambda update-function-code \
             --function-name test_dailyOptionChain_fetch_2 \
