@@ -1,33 +1,27 @@
-name: 🚀 Deploy to AWS Lambda
+name: 🚀 Deploy Lambda (no npm install)
 
 on:
   push:
     branches:
       - main
+  workflow_dispatch:  # optional manual trigger
 
 permissions:
   contents: read
 
 jobs:
   deploy:
-    name: Deploy Lambda
+    name: Deploy to AWS Lambda
     runs-on: ubuntu-latest
 
     steps:
       - name: 🧾 Checkout Repository
         uses: actions/checkout@v4
 
-      - name: ⚙️ Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: 20
-
-      - name: 📦 Install Dependencies
-        run: npm install
-
-      - name: 🗜️ Zip Lambda Package
+      - name: 🗜️ Zip Lambda Package (exclude unnecessary files)
         run: |
-          zip -r lambda.zip . -x "*.git*" "*.github*" "data/*" "node_modules/aws-sdk/*"
+          zip -r lambda.zip . \
+            -x "*.git*" "*.github*" "data/*" "node_modules/*" "README.md" ".env*" "package*.json"
 
       - name: ☁️ Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v4
