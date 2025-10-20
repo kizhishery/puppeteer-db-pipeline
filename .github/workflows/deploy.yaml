@@ -1,29 +1,29 @@
-name: 🚀 Deploy Lambda 
+name: 🚀 Deploy Lambda
 
 on:
   push:
-    branches:
-      - main
+    branches: [ main ]
 
 jobs:
   deploy:
+    environment: env 
     runs-on: ubuntu-latest
 
     steps:
-      - name: 🧭 Checkout repository
+      - name: Checkout
         uses: actions/checkout@v4
 
-      - name: 🗜️ Zip Lambda code
+      - name: Zip Lambda
         run: zip -r lambda.zip . -x "*.git*" "node_modules*" "trivial" "data"
 
-      - name: ☁️ Configure AWS credentials
+      - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ap-south-1
 
-      - name: 🚀 Deploy Lambda
+      - name: Deploy Lambda
         run: |
           aws lambda update-function-code \
             --function-name test_dailyOptionChain_fetch_2 \
