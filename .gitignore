@@ -5,6 +5,7 @@
 
 node_modules
 data
+date.js
 
 !package.json
 !data/index.js
