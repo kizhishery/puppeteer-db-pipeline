@@ -6,7 +6,7 @@ if (!process.env.AWS_LAMBDA_FUNCTION_NAME && !process.env.LAMBDA_TASK_ROOT) {
 // loop process locally
 const ITERATION = 1;
 // db
-const TTL=2, INSERT=true;
+const TTL=7, INSERT=true;
 
 // base url
 const {
