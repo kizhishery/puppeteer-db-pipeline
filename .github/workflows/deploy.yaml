@@ -29,3 +29,4 @@ jobs:
           aws lambda update-function-code \
             --function-name test_dailyOptionChain_fetch \
             --zip-file fileb://lambda.zip
+            --no-cli-pager > /dev/null
