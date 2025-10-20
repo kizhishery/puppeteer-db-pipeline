@@ -30,7 +30,7 @@ jobs:
           zip -r lambda.zip . -x "*.git*" "node_modules/aws-sdk/*" "trivial/*" "data/*"
 
       - name: Deploy to AWS Lambda
-        uses: appleboy/lambda-action@v1.5.2
+        uses: appleboy/lambda-action@v0.1.9
         with:
           aws_access_key_id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws_secret_access_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
