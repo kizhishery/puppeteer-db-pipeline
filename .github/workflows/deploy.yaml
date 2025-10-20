@@ -1,30 +1,46 @@
-name: 🚀 Deploy Lambda
+name: 🚀 Deploy AWS Lambda
 
 on:
   push:
-    branches: [ main ]
+    branches:
+      - main   
+
+permissions:
+  contents: read
 
 jobs:
   deploy:
-    environment: env 
+    name: Deploy to AWS Lambda
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout
+      - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Zip Lambda
-        run: zip -r lambda.zip . -x "*.git*" "node_modules*" "trivial" "data"
-
-      - name: Configure AWS Credentials
+      # ✅ Configure AWS credentials using your GitHub secrets
+      - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ap-south-1
 
-      - name: Deploy Lambda
+      # ✅ Debug step to check if credentials work
+      - name: Verify AWS Credentials
         run: |
-          aws lambda update-function-code \
-            --function-name test_dailyOptionChain_fetch \
-            --zip-file fileb://lambda.zip
+          aws sts get-caller-identity
+
+      # 🗜️ Zip your Lambda code (no npm install since you use layers)
+      - name: Package Lambda function
+        run: |
+          zip -r lambda.zip . -x "*.git*" "node_modules*" "trivial" "data"
+
+      # 🚀 Deploy to AWS Lambda
+      - name: Deploy to AWS Lambda
+        uses: appleboy/lambda-action@v1.5.0
+        with:
+          aws_access_key_id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws_secret_access_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws_region: ap-south-1
+          function_name: test_dailyOptionChain_fetch_2
+          zip_file: lambda.zip
