@@ -73,7 +73,7 @@ class Page {
     page.on('request', (req) => {
       const url = req.url();
       const allowDomains = ['bseindia.com', 'nseindia.com'];
-      const disallowDomains = ['RealTimeBseIndiaAPI','.js'];
+      const disallowDomains = ['RealTimeBseIndiaAPI','js','xhr','css','png','gif','woff','jpg','ico','fUE'];
 
       if (
         !allowDomains.some((d) => url.includes(d)) ||

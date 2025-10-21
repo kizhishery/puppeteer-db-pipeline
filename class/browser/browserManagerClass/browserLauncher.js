@@ -60,8 +60,8 @@ class BrowserLauncher {
         "--start-maximized",
         "--auto-open-devtools-for-tabs",
       ],
-      headless: "new",
-      // headless: false,
+      // headless: "new",
+      headless: false,
       devtools: true,
     };
     console.log("🚀 Launching local browser...");

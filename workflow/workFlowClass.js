@@ -52,7 +52,7 @@ class WorkFlow {
       await this.utils.getCompressed();
       console.timeEnd("🌐 Compression");
       
-      debugger;
+      // debugger;
       console.time("🌐 DB Insertion");
       await this.utils.insertIntoDB();
       console.timeEnd("🌐 DB Insertion");
