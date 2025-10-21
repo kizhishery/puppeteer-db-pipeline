@@ -6,10 +6,11 @@ if (!process.env.AWS_LAMBDA_FUNCTION_NAME && !process.env.LAMBDA_TASK_ROOT) {
 // loop process locally
 const ITERATION = 3;
 // db
-const TTL=2, INSERT=false;
+const TTL=2
 
 // base url
 const {
+  INSERT,
   GET_API_FUTURE_2,
   EXCHANGE,EXCHANGE2,
   GET_API_1,GET_API_2,
