@@ -1,7 +1,7 @@
 const { Expiry } = require("../expiry/expiryClass");
 const { DynamoInserter } = require("../db/dynamoDbClass");
 const { Processor } = require("../processor/processorClass");
-const { EXCHANGE, BASE_URL, BASE_URL_2 } = require("../../constants");
+const { EXCHANGE, BASE_URL, BASE_URL_2, ALLOWED, DISALLOWED} = require("../../constants");
 const {
   BrowserPageManager,
   CookieManager,
@@ -69,20 +69,18 @@ class Page {
     if (page._interceptionSet) return; // ✅ prevent re-adding listeners
 
     await page.setRequestInterception(true);
-
     page.on('request', (req) => {
       const url = req.url();
-      const allowDomains = ['bseindia.com', 'nseindia.com'];
-      const disallowDomains = ['RealTimeBseIndiaAPI','js','xhr','css','png','gif','woff','jpg','ico','fUE'];
 
-      if (
-        !allowDomains.some((d) => url.includes(d)) ||
-        disallowDomains.some((d) => url.includes(d))
-      ) {
+      const allowDomains = JSON.parse(ALLOWED);
+      const disallowDomains = JSON.parse(DISALLOWED);
+      
+      const isAllowed = (!allowDomains.some((d) => url.includes(d)) || disallowDomains.some((d) => url.includes(d)))
+      // debugger;
+      if (isAllowed) 
         req.abort();
-      } else {
+      else 
         req.continue();
-      }
     });
 
     page._interceptionSet = true;
