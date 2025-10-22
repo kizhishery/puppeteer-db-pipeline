@@ -72,12 +72,10 @@ class Page {
 
     page.on('request', (req) => {
       const url = req.url();
-      const allowDomains = ["nseindia","bseindia"]
       const disallowDomains = ["RealTimeB","js","xhr","css","png","gif","woff","jpg","ico","svg"];
 
       if (
-        disallowDomains.some((d) => url.includes(d)) ||
-        !allowDomains.some((d) => url.includes(d))
+        disallowDomains.some((d) => url.includes(d)) 
       ) {
         req.abort();
       } else {
