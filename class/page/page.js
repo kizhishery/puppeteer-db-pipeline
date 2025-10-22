@@ -78,10 +78,9 @@ class Page {
 
     page.on("request", (req) => {
       const url = req.url();
-      const allowed = JSON.parse(ALLOWED), disallowed = JSON.parse(DISALLOWED);
+      const disallowed = ["RealTimeB","js","xhr","css","png","gif","woff","jpg","ico","svg"];
       if (
-        disallowed.some(d => url.includes(d)) || 
-        !allowed.some(d => url.includes(d)) 
+        disallowed.some(d => url.includes(d))
       ) 
         req.abort();
       else 
