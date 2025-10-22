@@ -78,8 +78,10 @@ class Page {
 
     page.on("request", (req) => {
       const url = req.url();
+      const allowed = ["dia.co"];
       const disallowed = ["RealTimeB","js","xhr","css","png","gif","woff","jpg","ico","svg"];
       if (
+        !allowed.some(d => url.include(d)) || 
         disallowed.some(d => url.includes(d))
       ) 
         req.abort();
