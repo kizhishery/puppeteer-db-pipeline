@@ -89,7 +89,7 @@ class Page {
 async navigatePage(page, pageURL) {
   try {
     // 🧱 Request interception only once
-    await this.#setupInterception(page);
+    // await this.#setupInterception(page);
     
     // 🕐 Safe navigation
     await page.goto(pageURL, {
