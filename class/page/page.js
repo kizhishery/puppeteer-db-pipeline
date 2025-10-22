@@ -27,7 +27,7 @@ class Page {
     this.data = { current: null, next: null, active: null, future: null };
     this.compressed = {};
     this.intercept = {
-      allowed : JSON.parse(ALLOWED), disallowed : JSON.parse(DISALLOWED)
+      disallowed : JSON.parse(DISALLOWED)
     }
 
     this.pageInstances = {}; // ✅ store multiple prepared Puppeteer pages
@@ -83,7 +83,6 @@ class Page {
       const url = req.url();
 
       if (
-        !this.intercept.allowed.some(d => url.includes(d)) ||
         this.intercept.disallowed.some(d => url.includes(d)) 
       ) 
         req.abort();
