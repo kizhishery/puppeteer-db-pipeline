@@ -1,12 +1,12 @@
 // utils/workFlowUtils.js
 
 const {
+  GET_API_FUTURE_2,
   EXCHANGE, EXCHANGE2,
-  PAGE_URL_1, PAGE_URL_2,
-  PAGE_ACTIVE_URL_1, PAGE_ACTIVE_URL_2,
   GET_API_1, GET_API_2,
+  PAGE_URL_1, PAGE_URL_2,
   GET_API_ACTIVE_1, GET_API_ACTIVE_2,
-  GET_API_FUTURE_2
+  PAGE_ACTIVE_URL_1, PAGE_ACTIVE_URL_2,
 } = require('../constants');
 
 class WorkFlowUtils {
@@ -36,6 +36,7 @@ class WorkFlowUtils {
       page2.buildAttr(PAGE_URL_2, GET_API_2, PAGE_ACTIVE_URL_2, GET_API_ACTIVE_2, GET_API_FUTURE_2),
     ]);
 
+    debugger
       // ✅ Initialize Puppeteer tabs right after setting up URLs
     await Promise.all([
       page1.initAllPages(),

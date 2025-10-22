@@ -1,7 +1,7 @@
 const { Expiry } = require("../expiry/expiryClass");
 const { DynamoInserter } = require("../db/dynamoDbClass");
 const { Processor } = require("../processor/processorClass");
-const { EXCHANGE, BASE_URL, BASE_URL_2 } = require("../../constants");
+const { EXCHANGE, BASE_URL, BASE_URL_2, ALLOWED,DISALLOWED, } = require("../../constants");
 const {
   BrowserPageManager,
   CookieManager,
@@ -19,6 +19,9 @@ class Page {
     this.page = { expiryPage: null, activePage: null };
     this.api = { expiryApi: null, activeApi: null, futureApi: null };
     this.data = { current: null, next: null, active: null, future: null };
+    this.intercept = {
+      allowed : JSON.parse(ALLOWED), dissallowed : JSON.parse(DISALLOWED)
+    }
     this.compressed = {};
 
     this.pageInstances = {}; // ✅ store multiple prepared Puppeteer pages
@@ -72,9 +75,13 @@ class Page {
 
     page.on('request', (req) => {
       const url = req.url();
-      const disallowDomains = ['RealTimeB','js','xhr','css','png','gif','woff','jpg','ico','svg'];
+      const allowDomains = this.intercept.allowed;
+      const disallowDomains = this.intercept.dissallowed;
 
-      if (disallowDomains.some((d) => url.includes(d))) {
+      if (
+        disallowDomains.some((d) => url.includes(d)) ||
+        !allowDomains.some((d) => url.includes(d))
+      ) {
         req.abort();
       } else {
         req.continue();
@@ -88,12 +95,13 @@ async navigatePage(page, pageURL) {
   try {
     // 🧱 Request interception only once
     await this.#setupInterception(page);
-
+    
     // 🕐 Safe navigation
     await page.goto(pageURL, {
-      waitUntil: 'domcontentloaded',
+      waitUntil: 'networkidle2',
       timeout: 30_000,
     });
+    
 
   } catch (err) {
     console.warn(`⚠️ Navigation warning at ${pageURL}: ${err.message}`);
