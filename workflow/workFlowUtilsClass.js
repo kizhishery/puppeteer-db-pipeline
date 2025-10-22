@@ -36,7 +36,7 @@ class WorkFlowUtils {
       page2.buildAttr(PAGE_URL_2, GET_API_2, PAGE_ACTIVE_URL_2, GET_API_ACTIVE_2, GET_API_FUTURE_2),
     ]);
 
-    debugger
+    // debugger
       // ✅ Initialize Puppeteer tabs right after setting up URLs
     await Promise.all([
       page1.initAllPages(),

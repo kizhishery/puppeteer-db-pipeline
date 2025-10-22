@@ -1,7 +1,8 @@
-const { INSERT } = require("../../constants");
+let { INSERT } = require("../../constants");
 const { marshall } = require("@aws-sdk/util-dynamodb");
 const { DynamoDBClient, PutItemCommand } = require("@aws-sdk/client-dynamodb");
 
+INSERT = JSON.parse(INSERT);
 class DynamoInserter {
   constructor(payload) {
     this.payload = payload;
@@ -28,10 +29,10 @@ class DynamoInserter {
   }
 
 async insert() {
+  
   // debugger;
-
   // Skip if INSERT is false or payload is empty
-  if (INSERT !== 'true' || Object.keys(this.payload).length === 0) {
+  if (INSERT || Object.keys(this.payload).length === 0) {
     // debugger
     console.log("🏭 Skipped insertion | INSERT = false");
     return;
@@ -45,7 +46,7 @@ async insert() {
   // Insert all items concurrently with limited concurrency
   async insertAll(concurrency = 20) {
     // debugger;
-    if (!this.payload.length || INSERT !== 'true') {
+    if (!this.payload.length || INSERT) {
       // debugger;
       console.log("🏭 skipped insertion | INSERT = false");
       return;
