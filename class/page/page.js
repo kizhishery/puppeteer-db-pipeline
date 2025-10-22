@@ -72,7 +72,7 @@ class Page {
 
     page.on('request', (req) => {
       const url = req.url();
-      const allowDomains = ["dia.com"]
+      const allowDomains = ["nseindia","bseindia"]
       const disallowDomains = ["RealTimeB","js","xhr","css","png","gif","woff","jpg","ico","svg"];
 
       if (
