@@ -1,7 +1,13 @@
 const { Expiry } = require("../expiry/expiryClass");
 const { DynamoInserter } = require("../db/dynamoDbClass");
 const { Processor } = require("../processor/processorClass");
-const { EXCHANGE, BASE_URL, BASE_URL_2, ALLOWED,DISALLOWED, } = require("../../constants");
+const {
+  EXCHANGE,
+  BASE_URL,
+  BASE_URL_2,
+  ALLOWED,
+  DISALLOWED,
+} = require("../../constants");
 const {
   BrowserPageManager,
   CookieManager,
@@ -13,13 +19,16 @@ class Page {
     this.pageManager = new BrowserPageManager(browser);
     this.apiFetcher = null;
 
-    this.attr = {exchange, cookieManager: null };
+    this.attr = { exchange, cookieManager: null };
 
     this.arr = { expiry: null, expiryURL: null };
     this.page = { expiryPage: null, activePage: null };
     this.api = { expiryApi: null, activeApi: null, futureApi: null };
     this.data = { current: null, next: null, active: null, future: null };
     this.compressed = {};
+    this.intercept = {
+      allowed : JSON.parse(ALLOWED), disallowed : JSON.parse(DISALLOWED)
+    }
 
     this.pageInstances = {}; // ✅ store multiple prepared Puppeteer pages
   }
@@ -64,47 +73,42 @@ class Page {
 
   /** 🔹 Handle navigation separately */
   /** 🔹 Optimized navigation with smart request blocking & safe timeout */
-/** 🔹 Optimized Puppeteer navigation with request interception */
+  /** 🔹 Optimized Puppeteer navigation with request interception */
   async #setupInterception(page) {
     if (page._interceptionSet) return; // ✅ prevent re-adding listeners
 
     await page.setRequestInterception(true);
 
-    page.on('request', (req) => {
+    page.on("request", (req) => {
       const url = req.url();
-      const disallowDomains = ["RealTimeB","js","xhr","css","png","gif","woff","jpg","ico","svg"];
 
       if (
-        disallowDomains.some((d) => url.includes(d)) 
-      ) {
+        !this.intercept.allowed.some(d => url.includes(d)) ||
+        this.intercept.disallowed.some(d => url.includes(d)) 
+      ) 
         req.abort();
-      } else {
+      else 
         req.continue();
-      }
     });
 
     page._interceptionSet = true;
   }
 
-async navigatePage(page, pageURL) {
-  try {
-    // 🧱 Request interception only once
-    await this.#setupInterception(page);
-    
-    // 🕐 Safe navigation
-    await page.goto(pageURL, {
-      waitUntil: 'domcontentloaded',
-      timeout: 30_000,
-    });
-    
+  async navigatePage(page, pageURL) {
+    try {
+      // 🧱 Request interception only once
+      await this.#setupInterception(page);
 
-  } catch (err) {
-    console.warn(`⚠️ Navigation warning at ${pageURL}: ${err.message}`);
-    return false;
+      // 🕐 Safe navigation
+      await page.goto(pageURL, {
+        waitUntil: 'domcontentloaded',
+        timeout: 30_000,
+      });
+    } catch (err) {
+      console.warn(`⚠️ Navigation warning at ${pageURL}: ${err.message}`);
+      return false;
+    }
   }
-}
-
-
 
   /** 🔹 Prepare a page instance (uses getPageKey + navigatePage) */
   async preparePage(pageURL) {
