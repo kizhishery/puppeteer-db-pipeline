@@ -10,12 +10,12 @@ class OptionChainTWO {
           vol: "Vol_Traded",
           iv: "IV",
           ltp: "Last_Trd_Price",
-          tBQ: "BIdQty",
-          tSQ: "OfferQty",
-          bP: "BidPrice",
-          bQ: "BIdQty",
-          sP: "OfferPrice",
-          sQ: "OfferQty",
+          tbq: "BIdQty",
+          tsq: "OfferQty",
+          bp: "BidPrice",
+          bq: "BIdQty",
+          sp: "OfferPrice",
+          sq: "OfferQty",
         };
 
         for (const [prop, key] of Object.entries(mapping)) {

@@ -7,12 +7,12 @@ class OptionData {
       vol: "totalTradedVolume",
       iv: "impliedVolatility",
       ltp: "lastPrice",
-      tBQ: "totalBuyQuantity",
-      tSQ: "totalSellQuantity",
-      bP: "buyPrice1",
-      bQ: "buyQuantity1",
-      sP: "sellPrice1",
-      sQ: "sellQuantity1",
+      tbq: "totalBuyQuantity",
+      tsq: "totalSellQuantity",
+      bp: "buyPrice1",
+      bq: "buyQuantity1",
+      sp: "sellPrice1",
+      sq: "sellQuantity1",
     };
 
     for (const [prop, key] of Object.entries(mapping)) {
