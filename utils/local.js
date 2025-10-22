@@ -20,7 +20,7 @@ const runLocal = async (delay =  1000) => {
   }
 
   console.log('\n✅ All local runs completed');
-
+  debugger
   // Close all pages and browser after all runs
   await workflow.utils.closeAll();
   await browser.closeBrowser();
