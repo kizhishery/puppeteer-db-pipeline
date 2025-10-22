@@ -1,7 +1,7 @@
 const { Expiry } = require("../expiry/expiryClass");
 const { DynamoInserter } = require("../db/dynamoDbClass");
 const { Processor } = require("../processor/processorClass");
-const { EXCHANGE, BASE_URL, BASE_URL_2, ALLOWED_1,ALLOWED_2,DISALLOWED_1 } = require("../../constants");
+const { EXCHANGE, BASE_URL, BASE_URL_2 } = require("../../constants");
 const {
   BrowserPageManager,
   CookieManager,
@@ -72,13 +72,9 @@ class Page {
 
     page.on('request', (req) => {
       const url = req.url();
-      const allowDomains = [ALLOWED_1, ALLOWED_2];
-      const disallowDomains = [DISALLOWED_1,'js','xhr','css','png','gif','woff','jpg','ico','svg'];
+      const disallowDomains = ['RealTimeB','js','xhr','css','png','gif','woff','jpg','ico','svg'];
 
-      if (
-        !allowDomains.some((d) => url.includes(d)) ||
-        disallowDomains.some((d) => url.includes(d))
-      ) {
+      if (disallowDomains.some((d) => url.includes(d))) {
         req.abort();
       } else {
         req.continue();
