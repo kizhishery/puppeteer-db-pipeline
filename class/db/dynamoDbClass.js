@@ -29,7 +29,7 @@ class DynamoInserter {
 
 async insert() {
   
-  debugger
+  // debugger
   // debugger;
   // Skip if INSERT is false or payload is empty
   if (!INSERT || Object.keys(this.payload).length === 0) {
@@ -45,7 +45,7 @@ async insert() {
   
   // Insert all items concurrently with limited concurrency
   async insertAll(concurrency = 20) {
-    debugger
+    // debugger
     // debugger;
     if (!this.payload.length || !INSERT) {
       // debugger;
