@@ -39,6 +39,7 @@ class ApiFetcher {
         return null; // or return a default value
       }
       // Re-throw other errors
+      console.log(JSON.stringify(err));
       throw err;
     }
   }

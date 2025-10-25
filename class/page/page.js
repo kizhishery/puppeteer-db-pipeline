@@ -138,9 +138,10 @@ class Page {
 
   /** ✅ Prepare both expiry and active pages before fetching */
   async prepareAllPages() {
-    const pagesToPrepare = [this.page.expiryPage, this.page.activePage].filter(
+    const pagesToPrepare = [this.page.expiryPage,this.page.activePage].filter(
       Boolean
     );
+
     await Promise.all(pagesToPrepare.map((url) => this.preparePage(url)));
   }
 
@@ -161,7 +162,7 @@ class Page {
     }
   }
 
-  /** 🔹 Fetch options for current and next expiry */
+  /** 🔹 Fetch options for current and next expiry old*/
   async fetchOptions() {
     if (!this.arr.expiry?.length) return [];
 
@@ -178,31 +179,33 @@ class Page {
     Object.assign(this.data, { current, next });
   }
 
+
+  
   /** 🔹 Fetch only active data */
   async fetchActiveData() {
     if (!this.api.activeApi) return [];
-
+    
     await this.preparePage(this.page.activePage);
 
     const [active] = await Promise.all([
       this.apiFetcher.fetch(this.api.activeApi),
     ]);
-
+    
     Object.assign(this.data, { active });
   }
-
+  
   /** 🔹 Fetch both active and future data (for non-primary exchanges) */
   async fetchActiveAndFutureData() {
-    if (/*!this.api.activeApi ||*/ !this.api.futureApi) return [];
+    if (!this.api.activeApi || !this.api.futureApi) return [];
 
     await this.preparePage(this.page.activePage);
 
-    const [/*active,*/ future] = await Promise.all([
-      // this.apiFetcher.fetch(this.api.activeApi),
+    const [active,future] = await Promise.all([
+      this.apiFetcher.fetch(this.api.activeApi),
       this.apiFetcher.fetch(this.api.futureApi),
     ]);
 
-    Object.assign(this.data, { /*active,*/ future });
+    Object.assign(this.data, { active, future });
   }
 
   /** 🔹 Wrapper to choose correct fetch type */
@@ -218,7 +221,7 @@ class Page {
   async getExpiry() {
     const rawData = await this.fetchExpiry();
     const expiry = new Expiry(rawData, this.attr.exchange);
-    this.arr.expiry = expiry.getExpiry();
+    this.arr.expiry = expiry.getExpiry().slice(0,2);
     return this.arr.expiry;
   }
 
@@ -256,8 +259,6 @@ class Page {
           return Array.isArray(data) ? dbWriter.insertAll() : dbWriter.insert();
         })
     );
-
-    console.log(`💾 Inserted data into table`);
   }
 
   /** 🔹 Gracefully close all tabs */

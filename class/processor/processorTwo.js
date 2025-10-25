@@ -14,7 +14,7 @@ class ProcessorTwo extends BaseProcessor {
       data: {
         current: { Table: currentData, ASON: { DT_TM: timestamp } },
         next: { Table: nextData },
-        // active : [ mostActive ],
+        active : [ mostActive ],
         future : [ firstFuture, { LTP } ]
       },
     } = this.data;
@@ -31,10 +31,10 @@ class ProcessorTwo extends BaseProcessor {
       Handler: OptionChainParentTWO,
     });
 
-    // const active = new MostActiveContractTWO(mostActive,timestamp).getData();
+    const active = new MostActiveContractTWO(mostActive,timestamp).getData();
     const future = new FutureTWO(firstFuture,timestamp).getData();
 
-    return { current, next, /*active,*/ future};
+    return { current, next, active, future};
   }
 }
 
