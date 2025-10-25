@@ -193,16 +193,16 @@ class Page {
 
   /** 🔹 Fetch both active and future data (for non-primary exchanges) */
   async fetchActiveAndFutureData() {
-    if (!this.api.activeApi || !this.api.futureApi) return [];
+    if (/*!this.api.activeApi ||*/ !this.api.futureApi) return [];
 
     await this.preparePage(this.page.activePage);
 
-    const [active, future] = await Promise.all([
-      this.apiFetcher.fetch(this.api.activeApi),
+    const [/*active,*/ future] = await Promise.all([
+      // this.apiFetcher.fetch(this.api.activeApi),
       this.apiFetcher.fetch(this.api.futureApi),
     ]);
 
-    Object.assign(this.data, { active, future });
+    Object.assign(this.data, { /*active,*/ future });
   }
 
   /** 🔹 Wrapper to choose correct fetch type */
