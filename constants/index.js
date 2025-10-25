@@ -10,7 +10,7 @@ const TTL=2;
 
 // base url
 const {
-  _INSERT,
+  INSERT_,
   GET_API_FUTURE_2,
   ALLOWED,DISALLOWED,
   EXCHANGE,EXCHANGE2,
@@ -22,7 +22,7 @@ const {
   DYNAMO_DB_TABLE_OPTION,DYNAMO_DB_TABLE_ACTIVE,DYNAMO_DB_TABLE_FUTURE
 } = process.env;
 
-const INSERT = JSON.parse(_INSERT);
+const INSERT = JSON.parse(INSERT_);
 
 module.exports = {
   ITERATION,
