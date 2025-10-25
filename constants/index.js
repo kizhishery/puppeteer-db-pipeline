@@ -6,10 +6,11 @@ if (!process.env.AWS_LAMBDA_FUNCTION_NAME && !process.env.LAMBDA_TASK_ROOT) {
 // loop process locally
 const ITERATION = 1;
 // db
-const TTL=2,INSERT=false;
+const TTL=2;
 
 // base url
 const {
+  _INSERT,
   GET_API_FUTURE_2,
   ALLOWED,DISALLOWED,
   EXCHANGE,EXCHANGE2,
@@ -20,6 +21,8 @@ const {
   PAGE_ACTIVE_URL_1,PAGE_ACTIVE_URL_2,
   DYNAMO_DB_TABLE_OPTION,DYNAMO_DB_TABLE_ACTIVE,DYNAMO_DB_TABLE_FUTURE
 } = process.env;
+
+const INSERT = JSON.parse(_INSERT);
 
 module.exports = {
   ITERATION,

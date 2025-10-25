@@ -5,8 +5,6 @@ const {
   EXCHANGE,
   BASE_URL,
   BASE_URL_2,
-  ALLOWED,
-  DISALLOWED,
 } = require("../../constants");
 const {
   BrowserPageManager,

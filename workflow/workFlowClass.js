@@ -57,7 +57,7 @@ class WorkFlow {
       await this.utils.insertIntoDB();
       console.timeEnd("🌐 DB Insertion");
       
-      // debugger
+      debugger
     } catch (error) {
       console.error("❌ Workflow failed:", error);
       throw error;
