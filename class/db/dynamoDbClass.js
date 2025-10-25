@@ -28,7 +28,7 @@ class DynamoInserter {
   }
 
 async insert() {
-  debugger
+  // debugger
   // Skip if INSERT is false or payload is empty
   if (!INSERT || Object.keys(this.payload).length === 0) {
     // debugger
@@ -41,14 +41,14 @@ async insert() {
 
   if(INSERT) {
     const { ul, key, table } = this.payload;
-    console.log(`✅ : ${ul} of type ${key} inserted to ${table}`)
+    console.log(`✅ Inserted to ${ul} : ${key} : ${table}`)
   }
 }
 
   
   // Insert all items concurrently with limited concurrency
   async insertAll(concurrency = 20) {
-    debugger
+    // debugger
     if (!this.payload.length || !INSERT) {
       // debugger;
       console.log("🏭 skipped insertion | INSERT = false");
@@ -73,7 +73,7 @@ async insert() {
     
     if(INSERT) {
       const [{ ul, table}] = this.payload;
-      console.log(`✅ : ${ul} index inserted into ${table}`)
+      console.log(`✅ Inserted to ${ul} : ${table}`)
     }
   }
 }

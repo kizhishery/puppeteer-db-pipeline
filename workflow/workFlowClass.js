@@ -76,7 +76,7 @@ class WorkFlow {
     
     console.time("🌐 Total Workflow (Cached)");
     
-    // debugger;
+    debugger;
     try {
       console.time("🌐 Options");
       await this.utils.fetchOptions(); // start directly here
