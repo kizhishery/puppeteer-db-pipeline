@@ -47,7 +47,7 @@ class WorkFlow {
       await this.utils.fetchOptions();
       console.timeEnd("🌐 Options, Future and Active Data");
       
-      debugger
+      // debugger
       console.time("🌐 Compression");
       await this.utils.getCompressed();
       console.timeEnd("🌐 Compression");
@@ -89,9 +89,9 @@ class WorkFlow {
       await this.utils.insertIntoDB();
       console.timeEnd("🌐 DB Insertion");
       
-      debugger;
+      // debugger;
     } catch (error) {
-      debugger;
+      // debugger;
       console.error("❌ Cached workflow failed:", error);
       throw error;
     } finally {
@@ -106,9 +106,9 @@ class WorkFlow {
     if (! this._isLambda()) {
       const { page1 : pageExchange_1 , page2 : pageExchange2_1 } = require('../data');
       const { pages } = this.utils;
-      debugger;
+      // debugger;
       Object.assign(pages, { pageExchange_1, pageExchange2_1 });
-      debugger;
+      // debugger;
     }
   }
 }
