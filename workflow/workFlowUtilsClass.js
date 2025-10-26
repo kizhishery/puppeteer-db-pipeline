@@ -56,6 +56,15 @@ class WorkFlowUtils {
     ]);
   }
   
+  async prepareAllPages() {
+    const {pageExchange_1 : page1, pageExchange2_1 : page2} = this.pages;
+
+    await Promise.all([
+      page1.prepareAllPages(),
+      page2.prepareAllPages()
+    ])
+  }
+  
   /** Fetch options concurrently */
   async fetchOptions() {
     // debugger;

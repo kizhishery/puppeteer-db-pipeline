@@ -39,6 +39,10 @@ class WorkFlow {
       await this.utils.buildExpiry();
       console.timeEnd("🌐 Expiry");
       
+      console.time("🌐 Prepare pages");
+      await this.utils.prepareAllPages()
+      console.timeEnd("🌐 Prepare pages");
+      
       console.time("🌐 Options Data");
       await this.utils.fetchOptions();
       console.timeEnd("🌐 Options Data");
@@ -76,12 +80,16 @@ class WorkFlow {
     
     console.time("🌐 Total Workflow (Cached)");
     
-    debugger;
+    // debugger;
     try {
       console.time("🌐 Options");
       await this.utils.fetchOptions(); // start directly here
       console.timeEnd("🌐 Options");
       
+      console.time("🌐 most active and future");
+      await this.utils.fetchOtherData();
+      console.timeEnd("🌐 most active and future");
+
       console.time("🌐 Compression");
       await this.utils.getCompressed();
       console.timeEnd("🌐 Compression");
@@ -90,7 +98,7 @@ class WorkFlow {
       await this.utils.insertIntoDB();
       console.timeEnd("🌐 DB Insertion");
       
-      // debugger;
+      debugger;
     } catch (error) {
       // debugger;
       console.error("❌ Cached workflow failed:", error);

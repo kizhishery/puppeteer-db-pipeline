@@ -1,15 +1,16 @@
 class ApiFetcher {
-  constructor(page, cookieManager = null) {
-    this.page = page;
+  constructor(cookieManager = null) {
+    // this.page = page;
     this.cookieManager = cookieManager;
   }
 
-  async fetch(apiURL) {
-    if (!this.page) throw new Error("Page not initialized");
+  async fetch(page,apiURL) {
+    if (!page) throw new Error("Page not initialized");
     const cookieHeader = this.cookieManager ? this.cookieManager.getHeader() : "";
 
+    // debugger;
     try {
-      return await this.page.evaluate(
+      return await page.evaluate(
         async ({ apiURL, cookieHeader }) => {
           const res = await fetch(apiURL, {
             headers: {
@@ -39,7 +40,7 @@ class ApiFetcher {
         return null; // or return a default value
       }
       // Re-throw other errors
-      console.log(JSON.stringify(err));
+      console.dir(err);
       throw err;
     }
   }

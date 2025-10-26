@@ -16,7 +16,6 @@ class Page {
   constructor(browser, exchange) {
     this.pageManager = new BrowserPageManager(browser);
     this.apiFetcher = null;
-
     this.attr = { exchange, cookieManager: null };
 
     this.arr = { expiry: null, expiryURL: null };
@@ -58,22 +57,15 @@ class Page {
     Object.assign(this.page, { expiryPage, activePage });
   }
 
-  /** ✅ Prepare one of the pre-created pages (no recreation) */
-  /** 🔹 Identify which pre-created page key to use */
-  getPageKey(pageURL) {
-    if (pageURL === this.page.expiryPage) return "expiry";
-    if (pageURL === this.page.activePage) return "active";
-    return null;
-  }
-
+  
   /** 🔹 Handle navigation separately */
   /** 🔹 Optimized navigation with smart request blocking & safe timeout */
   /** 🔹 Optimized Puppeteer navigation with request interception */
   async #setupInterception(page) {
     if (page._interceptionSet) return; // ✅ prevent re-adding listeners
-
+    
     await page.setRequestInterception(true);
-
+    
     page.on("request", (req) => {
       const url = req.url();
       const allowed = ["dia.co"];
@@ -82,14 +74,14 @@ class Page {
         !allowed.some(d => url.includes(d)) || 
         disallowed.some(d => url.includes(d))
       ) 
-        req.abort();
+      req.abort();
       else 
         req.continue();
     });
-
+    
     page._interceptionSet = true;
   }
-
+  
   async navigatePage(page, pageURL) {
     try {
       // 🧱 Request interception only once
@@ -105,7 +97,14 @@ class Page {
       return false;
     }
   }
-
+  
+  /** ✅ Prepare one of the pre-created pages (no recreation) */
+  /** 🔹 Identify which pre-created page key to use */
+  getPageKey(pageURL) {
+    if (pageURL === this.page.expiryPage) return "expiry";
+    if (pageURL === this.page.activePage) return "active";
+    return null;
+  }
   /** 🔹 Prepare a page instance (uses getPageKey + navigatePage) */
   async preparePage(pageURL) {
     const pageKey = this.getPageKey(pageURL);
@@ -113,11 +112,10 @@ class Page {
     if (!pageKey || !this.pageInstances[pageKey]) {
       throw new Error(`No pre-created page instance found for URL: ${pageURL}`);
     }
-
     const page = this.pageInstances[pageKey];
     const alreadyReady =
-      this.apiFetcher && this.attr.cookieManager && page.url() === pageURL;
-
+    this.apiFetcher && this.attr.cookieManager && page.url() === pageURL;
+    
     if (!alreadyReady) {
       await this.navigatePage(page, pageURL);
       await this.initDependencies(page);
@@ -132,7 +130,7 @@ class Page {
     }
 
     if (!this.apiFetcher) {
-      this.apiFetcher = new ApiFetcher(page, this.attr.cookieManager);
+      this.apiFetcher = new ApiFetcher(this.attr.cookieManager);
     }
   }
 
@@ -146,74 +144,73 @@ class Page {
   }
 
   /** 🔹 Fetch expiry data (with retries) */
-  async fetchExpiry(retries = 3) {
-    for (let attempt = 1; attempt <= retries; attempt++) {
+  async fetchExpiry() {
       try {
-        // ✅ prepare both pages before fetching
-        await this.prepareAllPages();
-        // debugger;
-        return await this.apiFetcher.fetch(this.api.expiryApi);
+        await this.preparePage(this.page.expiryPage);
+        const page = this.pageInstances.expiry;
+
+        return await this.apiFetcher.fetch(page,this.api.expiryApi);
       } catch (err) {
         console.warn(
           `⚠️ fetchExpiry attempt ${attempt} failed: ${err.message}`
         );
         if (attempt === retries) throw err;
       }
-    }
   }
-
+  
   /** 🔹 Fetch options for current and next expiry old*/
   async fetchOptions() {
+    
     if (!this.arr.expiry?.length) return [];
-
+    
     await this.preparePage(this.page.expiryPage);
-
+    const page = this.pageInstances.expiry;
+    
     const optionUrls = this.arr.expiry.map((date) =>
       this.buildUrl(date, this.attr.exchange)
-    );
-
-    const [current, next] = await Promise.all(
-      optionUrls.map((url) => this.apiFetcher.fetch(url))
-    );
-
-    Object.assign(this.data, { current, next });
-  }
-
-
+  );
   
-  /** 🔹 Fetch only active data */
-  async fetchActiveData() {
-    if (!this.api.activeApi) return [];
-    
-    await this.preparePage(this.page.activePage);
-
-    const [active] = await Promise.all([
-      this.apiFetcher.fetch(this.api.activeApi),
-    ]);
-    
-    Object.assign(this.data, { active });
-  }
+  const [current, next] = await Promise.all(
+    optionUrls.map((url) => this.apiFetcher.fetch(page,url))
+  );
   
-  /** 🔹 Fetch both active and future data (for non-primary exchanges) */
-  async fetchActiveAndFutureData() {
-    if (!this.api.activeApi || !this.api.futureApi) return [];
+  Object.assign(this.data, { current, next });
+}
 
-    await this.preparePage(this.page.activePage);
 
-    const [active,future] = await Promise.all([
-      this.apiFetcher.fetch(this.api.activeApi),
-      this.apiFetcher.fetch(this.api.futureApi),
-    ]);
 
-    Object.assign(this.data, { active, future });
-  }
+/** 🔹 Fetch only active data */
+async fetchActiveData(page) {
+  if (!this.api.activeApi) return [];
+  
+  const [active] = await Promise.all([
+    this.apiFetcher.fetch(page,this.api.activeApi),
+  ]);
+  
+  Object.assign(this.data, { active });
+}
 
-  /** 🔹 Wrapper to choose correct fetch type */
-  async fetchOtherData() {
+/** 🔹 Fetch both active and future data (for non-primary exchanges) */
+async fetchActiveAndFutureData(page) {
+  if (!this.api.activeApi || !this.api.futureApi) return [];
+  
+  const [active,future] = await Promise.all([
+    this.apiFetcher.fetch(page, this.api.activeApi),
+    this.apiFetcher.fetch(page, this.api.futureApi),
+  ]);
+    
+  Object.assign(this.data, { active, future });
+}
+
+/** 🔹 Wrapper to choose correct fetch type */
+async fetchOtherData() {
+  await this.preparePage(this.page.activePage);
+  const page = this.pageInstances.active;
+    // debugger
     if (this.attr.exchange === EXCHANGE) {
-      await this.fetchActiveData();
+      await this.fetchActiveData(page);
     } else {
-      await this.fetchActiveAndFutureData();
+      await this.fetchActiveAndFutureData(page);
     }
   }
 
