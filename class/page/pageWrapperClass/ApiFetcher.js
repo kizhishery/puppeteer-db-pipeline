@@ -26,7 +26,7 @@ class ApiFetcher {
           if (!res.ok) {
             // Include status and text
             const text = await res.text().catch(() => "");
-            throw { status: res.status, text };
+            throw res.status ;
           }
 
           return res.json();

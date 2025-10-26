@@ -1,11 +1,7 @@
 const { Expiry } = require("../expiry/expiryClass");
 const { DynamoInserter } = require("../db/dynamoDbClass");
 const { Processor } = require("../processor/processorClass");
-const {
-  EXCHANGE,
-  BASE_URL,
-  BASE_URL_2,
-} = require("../../constants");
+const { EXCHANGE, BASE_URL, BASE_URL_2 } = require("../../constants");
 const {
   BrowserPageManager,
   CookieManager,
@@ -57,31 +53,30 @@ class Page {
     Object.assign(this.page, { expiryPage, activePage });
   }
 
-  
   /** 🔹 Handle navigation separately */
   /** 🔹 Optimized navigation with smart request blocking & safe timeout */
   /** 🔹 Optimized Puppeteer navigation with request interception */
   async #setupInterception(page) {
     if (page._interceptionSet) return; // ✅ prevent re-adding listeners
-    
+
     await page.setRequestInterception(true);
-    
+
     page.on("request", (req) => {
       const url = req.url();
       const allowed = ["dia.co"];
       const disallowed = ["RealTimeB","js","xhr","css","png","gif","woff","jpg","ico","svg"];
       if (
-        !allowed.some(d => url.includes(d)) || 
+        !allowed.some(d => url.includes(d)) ||
         disallowed.some(d => url.includes(d))
-      ) 
+      )
       req.abort();
-      else 
+      else
         req.continue();
     });
-    
+
     page._interceptionSet = true;
   }
-  
+
   async navigatePage(page, pageURL) {
     try {
       // 🧱 Request interception only once
@@ -89,7 +84,7 @@ class Page {
 
       // 🕐 Safe navigation
       await page.goto(pageURL, {
-        waitUntil: 'domcontentloaded',
+        waitUntil: "domcontentloaded",
         timeout: 30_000,
       });
     } catch (err) {
@@ -97,7 +92,7 @@ class Page {
       return false;
     }
   }
-  
+
   /** ✅ Prepare one of the pre-created pages (no recreation) */
   /** 🔹 Identify which pre-created page key to use */
   getPageKey(pageURL) {
@@ -114,8 +109,8 @@ class Page {
     }
     const page = this.pageInstances[pageKey];
     const alreadyReady =
-    this.apiFetcher && this.attr.cookieManager && page.url() === pageURL;
-    
+      this.apiFetcher && this.attr.cookieManager && page.url() === pageURL;
+
     if (!alreadyReady) {
       await this.navigatePage(page, pageURL);
       await this.initDependencies(page);
@@ -136,7 +131,7 @@ class Page {
 
   /** ✅ Prepare both expiry and active pages before fetching */
   async prepareAllPages() {
-    const pagesToPrepare = [this.page.expiryPage,this.page.activePage].filter(
+    const pagesToPrepare = [this.page.expiryPage, this.page.activePage].filter(
       Boolean
     );
 
@@ -145,67 +140,62 @@ class Page {
 
   /** 🔹 Fetch expiry data (with retries) */
   async fetchExpiry() {
-      try {
-        await this.preparePage(this.page.expiryPage);
-        const page = this.pageInstances.expiry;
+    try {
+      await this.preparePage(this.page.expiryPage);
+      const page = this.pageInstances.expiry;
 
-        return await this.apiFetcher.fetch(page,this.api.expiryApi);
-      } catch (err) {
-        console.warn(
-          `⚠️ fetchExpiry attempt ${attempt} failed: ${err.message}`
-        );
-        if (attempt === retries) throw err;
-      }
+      return await this.apiFetcher.fetch(page, this.api.expiryApi);
+    } catch (err) {
+      console.warn(`⚠️ fetchExpiry attempt ${attempt} failed: ${err.message}`);
+      if (attempt === retries) throw err;
+    }
   }
-  
+
   /** 🔹 Fetch options for current and next expiry old*/
   async fetchOptions() {
-    
     if (!this.arr.expiry?.length) return [];
-    
+
     await this.preparePage(this.page.expiryPage);
     const page = this.pageInstances.expiry;
-    
+
     const optionUrls = this.arr.expiry.map((date) =>
       this.buildUrl(date, this.attr.exchange)
-  );
-  
-  const [current, next] = await Promise.all(
-    optionUrls.map((url) => this.apiFetcher.fetch(page,url))
-  );
-  
-  Object.assign(this.data, { current, next });
-}
+    );
 
+    const [current, next] = await Promise.all(
+      optionUrls.map((url) => this.apiFetcher.fetch(page, url))
+    );
 
+    Object.assign(this.data, { current, next });
+  }
 
-/** 🔹 Fetch only active data */
-async fetchActiveData(page) {
-  if (!this.api.activeApi) return [];
-  
-  const [active] = await Promise.all([
-    this.apiFetcher.fetch(page,this.api.activeApi),
-  ]);
-  
-  Object.assign(this.data, { active });
-}
+  /** 🔹 Fetch only active data */
+  async fetchActiveData(page) {
+    if (!this.api.activeApi) return [];
 
-/** 🔹 Fetch both active and future data (for non-primary exchanges) */
-async fetchActiveAndFutureData(page) {
-  if (!this.api.activeApi || !this.api.futureApi) return [];
-  
-  const [active,future] = await Promise.all([
-    this.apiFetcher.fetch(page, this.api.activeApi),
-    this.apiFetcher.fetch(page, this.api.futureApi),
-  ]);
-    
-  Object.assign(this.data, { active, future });
-}
+    const [active] = await Promise.all([
+      this.apiFetcher.fetch(page, this.api.activeApi),
+    ]);
 
-/** 🔹 Wrapper to choose correct fetch type */
-async fetchOtherData() {
-  await this.preparePage(this.page.activePage);
-  const page = this.pageInstances.active;
+    Object.assign(this.data, { active });
+  }
+
+  /** 🔹 Fetch both active and future data (for non-primary exchanges) */
+  async fetchActiveAndFutureData(page) {
+    if (!this.api.activeApi || !this.api.futureApi) return [];
+
+    const [active, future] = await Promise.all([
+      this.apiFetcher.fetch(page, this.api.activeApi),
+      this.apiFetcher.fetch(page, this.api.futureApi),
+    ]);
+
+    Object.assign(this.data, { active, future });
+  }
+
+  /** 🔹 Wrapper to choose correct fetch type */
+  async fetchOtherData() {
+    await this.preparePage(this.page.activePage);
+    const page = this.pageInstances.active;
     // debugger
     if (this.attr.exchange === EXCHANGE) {
       await this.fetchActiveData(page);
@@ -218,7 +208,7 @@ async fetchOtherData() {
   async getExpiry() {
     const rawData = await this.fetchExpiry();
     const expiry = new Expiry(rawData, this.attr.exchange);
-    this.arr.expiry = expiry.getExpiry().slice(0,2);
+    this.arr.expiry = expiry.getExpiry().slice(0, 2);
     return this.arr.expiry;
   }
 
