@@ -27,5 +27,5 @@ jobs:
         run: |
           echo "🚀 Deploying Lambda function..."
           aws lambda update-function-code \
-            --function-name test_dailyOptionChain_fetch \
+            --function-name test_dailyOptionChain_fetch_2 \
             --zip-file fileb://lambda.zip
