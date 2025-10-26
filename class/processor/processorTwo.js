@@ -19,7 +19,7 @@ class ProcessorTwo extends BaseProcessor {
     return {
       exchange: raw.attr?.exchange ?? null,
       timestamp: current.ASON?.DT_TM ?? null,
-      underlyingValue: futureArr[1]?.LTP ?? null,
+      underlyingValue: futureArr[0]?.LTP ?? null,
       currentData: current.Table ?? [],
       nextData: next.Table ?? [],
       mostActive: activeArr[0] ?? null,
@@ -53,14 +53,14 @@ class ProcessorTwo extends BaseProcessor {
       volume: mostActive,
       timestamp,
       MostActiveHandler: MostActiveContractTWO,
-      filter : false
+      filter : true
     });
 
     const future = this.handleFuture({
-      value: firstFuture ? firstFuture : null,
+      value: firstFuture,
       timestamp,
       FutureHandler: FutureTWO,
-      filter : false
+      filter : true
     });
 
     return { current, next, active, future };
