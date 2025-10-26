@@ -53,14 +53,14 @@ class ProcessorTwo extends BaseProcessor {
       volume: mostActive,
       timestamp,
       MostActiveHandler: MostActiveContractTWO,
-      filter : true
+      filter : false
     });
 
     const future = this.handleFuture({
       value: firstFuture,
       timestamp,
       FutureHandler: FutureTWO,
-      filter : true
+      filter : false
     });
 
     return { current, next, active, future };
