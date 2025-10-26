@@ -1,7 +1,7 @@
 const { Expiry } = require("../expiry/expiryClass");
 const { DynamoInserter } = require("../db/dynamoDbClass");
 const { Processor } = require("../processor/processorClass");
-const { EXCHANGE, BASE_URL, BASE_URL_2 } = require("../../constants");
+const { EXCHANGE, BASE_URL, BASE_URL_2,ALLOWED,DISALLOWED } = require("../../constants");
 const {
   BrowserPageManager,
   CookieManager,
@@ -18,6 +18,7 @@ class Page {
     this.page = { expiryPage: null, activePage: null };
     this.api = { expiryApi: null, activeApi: null, futureApi: null };
     this.data = { current: null, next: null, active: null, future: null };
+    this.filter = { allowed : ALLOWED, disallowed : DISALLOWED};
     this.compressed = {};
 
     this.pageInstances = {}; // ✅ store multiple prepared Puppeteer pages
@@ -63,8 +64,9 @@ class Page {
 
     page.on("request", (req) => {
       const url = req.url();
-      const allowed = ["dia.co"];
-      const disallowed = ["RealTimeB","js","xhr","css","png","gif","woff","jpg","ico","svg"];
+      const allowed = this.filter.allowed;
+      const disallowed = this.filter.disallowed;
+      
       if (
         !allowed.some(d => url.includes(d)) ||
         disallowed.some(d => url.includes(d))
@@ -85,7 +87,7 @@ class Page {
       // 🕐 Safe navigation
       await page.goto(pageURL, {
         waitUntil: "domcontentloaded",
-        timeout: 30_000,
+        timeout: 60_000,
       });
     } catch (err) {
       console.warn(`⚠️ Navigation warning at ${pageURL}: ${err.message}`);
