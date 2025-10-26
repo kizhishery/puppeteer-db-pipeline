@@ -34,34 +34,29 @@ class WorkFlow {
       await this.utils.insertAttr();
       console.timeEnd("🌐 Page Setup");
       
+      console.time("🌐 Prepare pages");
+      await this.utils.prepareAllPages()
+      console.timeEnd("🌐 Prepare pages");
+
       // debugger;
       console.time("🌐 Expiry");
       await this.utils.buildExpiry();
       console.timeEnd("🌐 Expiry");
       
-      console.time("🌐 Prepare pages");
-      await this.utils.prepareAllPages()
-      console.timeEnd("🌐 Prepare pages");
-      
-      console.time("🌐 Options Data");
+      console.time("🌐 Options, Future and Active Data");
       await this.utils.fetchOptions();
-      console.timeEnd("🌐 Options Data");
-
-      console.time("🌐 most active and future");
-      await this.utils.fetchOtherData();
-      console.timeEnd("🌐 most active and future");
+      console.timeEnd("🌐 Options, Future and Active Data");
       
-      // debugger;
+      debugger
       console.time("🌐 Compression");
       await this.utils.getCompressed();
       console.timeEnd("🌐 Compression");
       
-      // debugger;
       console.time("🌐 DB Insertion");
       await this.utils.insertIntoDB();
       console.timeEnd("🌐 DB Insertion");
       
-      debugger
+      // debugger
     } catch (error) {
       console.error("❌ Workflow failed:", error);
       throw error;
@@ -82,13 +77,9 @@ class WorkFlow {
     
     // debugger;
     try {
-      console.time("🌐 Options");
+      console.time("🌐 Options, Future and Active Data");
       await this.utils.fetchOptions(); // start directly here
-      console.timeEnd("🌐 Options");
-      
-      console.time("🌐 most active and future");
-      await this.utils.fetchOtherData();
-      console.timeEnd("🌐 most active and future");
+      console.timeEnd("🌐 Options, Future and Active Data");
 
       console.time("🌐 Compression");
       await this.utils.getCompressed();

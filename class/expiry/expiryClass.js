@@ -29,19 +29,23 @@ class Expiry {
     if (!this.data.expiryDates || !Array.isArray(this.data.expiryDates)) {
       return [];
     }
+
+    // debugger;
     return this.data.expiryDates.slice(0, 2);
   }
-
+  
   getExpiryTwo() {
     // Return first 2 ExpiryDate values from Table1 array
     if (!this.data.Table1 || !Array.isArray(this.data.Table1)) {
       return [];
     }
-
+    
+    // debugger;
     const expiryDates = this.data.Table1
       .map(entry => entry?.ExpiryDate)
-      .filter(Boolean); // remove undefined/null if any
+      .slice(0,2); // remove undefined/null if any
 
+    
     return expiryDates;
   }
 }

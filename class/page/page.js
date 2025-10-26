@@ -66,7 +66,7 @@ class Page {
       const url = req.url();
       const allowed = this.filter.allowed;
       const disallowed = this.filter.disallowed;
-      
+
       if (
         !allowed.some(d => url.includes(d)) ||
         disallowed.some(d => url.includes(d))
@@ -210,7 +210,7 @@ class Page {
   async getExpiry() {
     const rawData = await this.fetchExpiry();
     const expiry = new Expiry(rawData, this.attr.exchange);
-    this.arr.expiry = expiry.getExpiry().slice(0, 2);
+    this.arr.expiry = expiry.getExpiry();
     return this.arr.expiry;
   }
 
@@ -233,8 +233,8 @@ class Page {
 
   /** 🔹 Process data into compressed format */
   getCompressed() {
-    // debugger;
     const args = { attr: this.attr, data: this.data };
+    // debugger;
     this.compressed = new Processor(args).process();
   }
 

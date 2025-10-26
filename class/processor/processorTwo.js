@@ -4,25 +4,34 @@ const { OptionChainParentTWO, MostActiveContractTWO, FutureTWO } = require("../a
 class ProcessorTwo extends BaseProcessor {
   constructor(data) {
     super();
-    this.data = data;
+    this.data = this.normalizeData(data);
+  }
+
+  normalizeData(raw) {
+    if (!raw) return {};
+
+    const data = raw.data ?? {};
+    const current = data.current ?? {};
+    const next = data.next ?? {};
+    const activeArr = data.active ?? [];
+    const futureArr = data.future ?? [];
+
+    return {
+      exchange: raw.attr?.exchange ?? null,
+      timestamp: current.ASON?.DT_TM ?? null,
+      underlyingValue: futureArr[0]?.LTP ?? null,
+      currentData: current.Table ?? [],
+      nextData: next.Table ?? [],
+      mostActive: activeArr[0] ?? null,
+      firstFuture: futureArr[0] ?? null,
+    };
   }
 
   process() {
-    // debugger;
-    const {
-      attr: { exchange },
-      data: {
-        current: { Table: currentData, ASON: { DT_TM: timestamp } },
-        next: { Table: nextData },
-        active : [ mostActive ],
-        future : [ firstFuture, { LTP } ]
-      },
-    } = this.data;
+    const {exchange,timestamp,underlyingValue,currentData,nextData,mostActive,firstFuture} = this.data;
 
-    // Default underlying value for this exchange
-    const underlyingValue = LTP;
-
-    const { current , next } = this.handleProcess({
+    // Option chain processing
+    const { current, next } = this.handleProcess({
       currentData,
       nextData,
       timestamp,
@@ -31,10 +40,22 @@ class ProcessorTwo extends BaseProcessor {
       Handler: OptionChainParentTWO,
     });
 
-    const active = new MostActiveContractTWO(mostActive,timestamp).getData();
-    const future = new FutureTWO(firstFuture,timestamp).getData();
+    // Active & Future using BaseProcessor helpers
+    const active = this.handleActive({
+      volume: mostActive,
+      timestamp,
+      MostActiveHandler: MostActiveContractTWO,
+      filter : false
+    });
 
-    return { current, next, active, future};
+    const future = this.handleFuture({
+      value: firstFuture,
+      timestamp,
+      FutureHandler: FutureTWO,
+      filter : false
+    });
+
+    return { current, next, active, future };
   }
 }
 

@@ -4,7 +4,7 @@ if (!process.env.AWS_LAMBDA_FUNCTION_NAME && !process.env.LAMBDA_TASK_ROOT) {
 }
 
 // loop process locally
-const ITERATION = 3;
+const ITERATION = 2;
 // db
 const TTL=2;
 

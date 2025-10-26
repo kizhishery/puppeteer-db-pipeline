@@ -34,6 +34,7 @@ class FutureTWO {
     this.ul = this.ul.substr(0,6);
     this.key = `F | ${this.ul} | ${this.exp}`;
     this.ttl = this.#getTTL();
+    
   }
   
   #getTimestamp(time) {
@@ -48,6 +49,7 @@ class FutureTWO {
   }
   
   #getExpiry() {
+    // debugger;
     const expiry = new Date(this.exp + ' UTC').toISOString().split('T')[0];
     return expiry;
   }

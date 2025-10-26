@@ -1,24 +1,44 @@
 const { BaseProcessor } = require("./baseProcessor");
-const { OptionChainParent, FutureONE, MostActiveContractONE } = require("../api");
+const {
+  OptionChainParent,
+  FutureONE,
+  MostActiveContractONE,
+} = require("../api");
 
 class ProcessorOne extends BaseProcessor {
   constructor(data) {
     super();
-    this.data = data;
+    this.data = this.normalizeData(data);
+  }
+
+  normalizeData(raw) {
+    if (!raw) return {};
+
+    const d = raw.data ?? {};
+    const current = d.current?.records ?? {};
+    const next = d.next?.records ?? {};
+    const active = d.active ?? {};
+
+    return {
+      exchange: raw.attr?.exchange ?? null,
+      timestamp: current.timestamp ?? null,
+      underlyingValue: current.underlyingValue ?? null,
+      currentData: current.data ?? [],
+      nextData: next.data ?? [],
+      value: active.value?.data ?? [],
+      volume: active.volume?.data ?? [],
+    };
   }
 
   process() {
     const {
-      attr: { exchange },
-      data: {
-        current: {
-          records: { timestamp, underlyingValue, data: currentData },
-        },
-        next: {
-          records: { data: nextData },
-        },
-        active : { value : { data : value }, volume : { data : volume }}
-      },
+      exchange,
+      timestamp,
+      underlyingValue,
+      currentData,
+      nextData,
+      value,
+      volume,
     } = this.data;
 
     const { current, next } = this.handleProcess({
@@ -30,14 +50,23 @@ class ProcessorOne extends BaseProcessor {
       Handler: OptionChainParent,
     });
 
-    const filterFuture = value.find(val => val.instrumentType == "FUTIDX");
-    const filterVolume = volume.find(val => val.instrumentType == "OPTIDX");
+    const future = this.handleFuture({
+      value,
+      timestamp,
+      FutureHandler: FutureONE,
+      filter : true 
+    });
 
-    const future = new FutureONE(filterFuture,timestamp).getData();
-    const active = new MostActiveContractONE(filterVolume, timestamp).getData();
-    
-    return { current, next, active, future };
+    const active = this.handleActive({
+      volume,
+      timestamp,
+      MostActiveHandler: MostActiveContractONE,
+      filter : true
+    });
+
+    return { current , next , active, future };
   }
 }
+
 
 module.exports = { ProcessorOne };

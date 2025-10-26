@@ -74,18 +74,21 @@ class WorkFlowUtils {
     await Promise.all([
       page1.fetchOptions(),
       page2.fetchOptions(),
+      page1.fetchOtherData(),
+      page2.fetchOtherData()
     ]);
     
   }
   
-  async fetchOtherData() {
-    const {pageExchange_1 : page1, pageExchange2_1 : page2} = this.pages;
-    // wait for pages to build then cache be used
-    await Promise.all([
-      page1.fetchOtherData(),
-      page2.fetchOtherData()
-    ]);
-  }
+  // async fetchOtherData() {
+  //   const {pageExchange_1 : page1, pageExchange2_1 : page2} = this.pages;
+  //   // wait for pages to build then cache be used
+  //   await Promise.all([
+  //     page1.fetchOtherData(),
+  //     page2.fetchOtherData()
+  //   ]);
+  // }
+  
   
   /** Compress data */
   async getCompressed() {
