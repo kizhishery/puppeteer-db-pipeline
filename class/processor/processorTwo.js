@@ -10,16 +10,16 @@ class ProcessorTwo extends BaseProcessor {
   normalizeData(raw) {
     if (!raw) return {};
 
-    const data = raw.data ?? {};
-    const current = data.current ?? {};
-    const next = data.next ?? {};
-    const activeArr = data.active ?? [];
-    const futureArr = data.future ?? [];
+    const d = raw.data ?? {};
+    const current = d.current ?? {};
+    const next = d.next ?? {};
+    const activeArr = d.active ?? [];
+    const futureArr = d.future ?? [];
 
     return {
       exchange: raw.attr?.exchange ?? null,
       timestamp: current.ASON?.DT_TM ?? null,
-      underlyingValue: futureArr[0]?.LTP ?? null,
+      underlyingValue: futureArr[1]?.LTP ?? null,
       currentData: current.Table ?? [],
       nextData: next.Table ?? [],
       mostActive: activeArr[0] ?? null,
@@ -28,7 +28,15 @@ class ProcessorTwo extends BaseProcessor {
   }
 
   process() {
-    const {exchange,timestamp,underlyingValue,currentData,nextData,mostActive,firstFuture} = this.data;
+    const { 
+      exchange, 
+      timestamp, 
+      underlyingValue, 
+      currentData, 
+      nextData, 
+      mostActive, 
+      firstFuture 
+    } = this.data;
 
     // Option chain processing
     const { current, next } = this.handleProcess({
@@ -49,7 +57,7 @@ class ProcessorTwo extends BaseProcessor {
     });
 
     const future = this.handleFuture({
-      value: firstFuture,
+      value: firstFuture ? firstFuture : null,
       timestamp,
       FutureHandler: FutureTWO,
       filter : false
