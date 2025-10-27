@@ -43,3 +43,4 @@ class Browser {
 }
 
 module.exports = { Browser };
+

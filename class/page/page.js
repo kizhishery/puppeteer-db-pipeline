@@ -12,15 +12,13 @@ class Page {
   constructor(browser, exchange) {
     this.pageManager = new BrowserPageManager(browser);
     this.apiFetcher = null;
-    this.attr = { exchange, cookieManager: null };
-
     this.arr = { expiry: null, expiryURL: null };
+    this.attr = { exchange, cookieManager: null };
     this.page = { expiryPage: null, activePage: null };
+    this.filter = { allowed : ALLOWED, disallowed : DISALLOWED};
     this.api = { expiryApi: null, activeApi: null, futureApi: null };
     this.data = { current: null, next: null, active: null, future: null };
-    this.filter = { allowed : ALLOWED, disallowed : DISALLOWED};
     this.compressed = {};
-
     this.pageInstances = {}; // ✅ store multiple prepared Puppeteer pages
   }
 
@@ -142,6 +140,7 @@ class Page {
 
   /** 🔹 Fetch expiry data (with retries) */
   async fetchExpiry() {
+    // debugger;
     try {
       await this.preparePage(this.page.expiryPage);
       const page = this.pageInstances.expiry;
