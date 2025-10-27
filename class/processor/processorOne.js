@@ -50,20 +50,25 @@ class ProcessorOne extends BaseProcessor {
       Handler: OptionChainParent,
     });
 
-    const future = this.handleFuture({
-      value,
-      timestamp,
-      FutureHandler: FutureONE,
-      filter : true 
-    });
-
-    const active = this.handleActive({
-      volume,
-      timestamp,
-      MostActiveHandler: MostActiveContractONE,
-      filter : true
-    });
-
+    let future;
+    if(value.length) {
+      future = this.handleFuture({
+        value,
+        timestamp,
+        FutureHandler: FutureONE,
+        filter : true 
+      });
+    }
+    
+    let active;
+    if(value.length) {
+      active = this.handleActive({
+        volume,
+        timestamp,
+        MostActiveHandler: MostActiveContractONE,
+        filter : true
+      });
+    }
     return { current , next , active, future };
   }
 }

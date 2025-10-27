@@ -57,13 +57,15 @@ class WorkFlow {
       console.timeEnd("🌐 DB Insertion");
       
       debugger
-    } catch (error) {
+    } 
+    catch (error) {
       console.error("❌ Workflow failed:", error);
-      throw error;
+      await this.utils.closeAll();
+      console.log("☠️ All pages closed")
+      await this.browser.closeBrowser();
+      console.log("☠️ Browser closed")
     } 
     finally {
-      // await this.utils.closeAll();
-      // await this.browser.closeBrowser();
       console.timeEnd("🌐 Total Workflow");
     }
   }
@@ -80,7 +82,7 @@ class WorkFlow {
       console.time("🌐 Options, Future and Active Data");
       await this.utils.fetchOptions(); // start directly here
       console.timeEnd("🌐 Options, Future and Active Data");
-
+      
       console.time("🌐 Compression");
       await this.utils.getCompressed();
       console.timeEnd("🌐 Compression");
@@ -92,8 +94,11 @@ class WorkFlow {
       debugger;
     } catch (error) {
       // debugger;
-      console.error("❌ Cached workflow failed:", error);
-      throw error;
+      console.error("❌ Workflow failed:", error);
+      await this.utils.closeAll();
+      console.log("☠️ All pages closed")
+      await this.browser.closeBrowser();
+      console.log("☠️ Browser closed")
     } finally {
       console.timeEnd("🌐 Total Workflow (Cached)");
     }
