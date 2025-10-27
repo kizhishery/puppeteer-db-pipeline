@@ -56,7 +56,7 @@ class WorkFlow {
       await this.utils.insertIntoDB();
       console.timeEnd("🌐 DB Insertion");
       
-      // debugger
+      debugger
     } catch (error) {
       console.error("❌ Workflow failed:", error);
       throw error;
@@ -75,7 +75,7 @@ class WorkFlow {
     
     console.time("🌐 Total Workflow (Cached)");
     
-    // debugger;
+    debugger;
     try {
       console.time("🌐 Options, Future and Active Data");
       await this.utils.fetchOptions(); // start directly here
@@ -89,7 +89,7 @@ class WorkFlow {
       await this.utils.insertIntoDB();
       console.timeEnd("🌐 DB Insertion");
       
-      // debugger;
+      debugger;
     } catch (error) {
       // debugger;
       console.error("❌ Cached workflow failed:", error);
