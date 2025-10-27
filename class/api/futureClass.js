@@ -2,6 +2,8 @@ const { TTL, DYNAMO_DB_TABLE_FUTURE } = require('../../constants');
 
 class FutureONE {
   constructor(data,timestamp) {
+    debugger;
+
     const mapping = {
       exp: "expiryDate",
       ltp: "lastPrice",

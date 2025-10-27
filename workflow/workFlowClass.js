@@ -47,7 +47,7 @@ class WorkFlow {
       await this.utils.fetchOptions();
       console.timeEnd("🌐 Options, Future and Active Data");
       
-      // debugger
+      debugger
       console.time("🌐 Compression");
       await this.utils.getCompressed();
       console.timeEnd("🌐 Compression");
