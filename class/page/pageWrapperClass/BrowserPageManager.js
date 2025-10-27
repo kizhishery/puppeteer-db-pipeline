@@ -25,3 +25,5 @@ class BrowserPageManager {
 }
 
 module.exports = { BrowserPageManager };
+
+

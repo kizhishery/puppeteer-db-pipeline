@@ -10,16 +10,16 @@ const {
 
 class Page {
   constructor(browser, exchange) {
-    this.pageManager = new BrowserPageManager(browser);
     this.apiFetcher = null;
+    this.compressed = {};
+    this.pageInstances = {}; // ✅ store multiple prepared Puppeteer pages
     this.arr = { expiry: null, expiryURL: null };
     this.attr = { exchange, cookieManager: null };
     this.page = { expiryPage: null, activePage: null };
+    this.pageManager = new BrowserPageManager(browser);
     this.filter = { allowed : ALLOWED, disallowed : DISALLOWED};
     this.api = { expiryApi: null, activeApi: null, futureApi: null };
     this.data = { current: null, next: null, active: null, future: null };
-    this.compressed = {};
-    this.pageInstances = {}; // ✅ store multiple prepared Puppeteer pages
   }
 
   /** ✅ Create both expiry and active pages immediately */
@@ -239,6 +239,7 @@ class Page {
 
   /** 🔹 Insert processed data into DynamoDB */
   async insertIntoDB() {
+    // debugger;
     await Promise.all(
       Object.values(this.compressed)
         .filter(Boolean)
