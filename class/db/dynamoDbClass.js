@@ -41,7 +41,7 @@ async insert() {
 
   if(INSERT) {
     const { ul, key, table } = this.payload;
-    console.log(`✅ Inserted to ${ul} : ${key} : ${table}`)
+    console.log(`✅ Inserted to ${ul} : ${table} : ${key}`)
   }
 }
 

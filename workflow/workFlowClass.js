@@ -76,7 +76,9 @@ class WorkFlow {
       console.time("🌐 DB Insertion");
       await this.utils.insertIntoDB();
       console.timeEnd("🌐 DB Insertion");
+      debugger
     } catch (err) {
+      debugger
       await this.error(err); // ✅ centralized call
     } finally {
       console.timeEnd("🌐 Total Workflow");
@@ -101,7 +103,9 @@ class WorkFlow {
       console.time("🌐 DB Insertion");
       await this.utils.insertIntoDB();
       console.timeEnd("🌐 DB Insertion");
+      debugger
     } catch (err) {
+      debugger
       await this.error(err); // ✅ reuse centralized handler
     } finally {
       console.timeEnd("🌐 Total Workflow (Cached)");
