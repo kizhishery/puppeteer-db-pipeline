@@ -11,8 +11,8 @@ const TTL=2;
 // base url
 const {
   INSERT_,
+  ALLOWED_,
   GET_API_FUTURE_2,
-  ALLOWED_,DISALLOWED_,
   EXCHANGE,EXCHANGE2,
   GET_API_1,GET_API_2,
   BASE_URL,BASE_URL_2,
@@ -23,13 +23,13 @@ const {
 } = process.env;
 
 const INSERT = JSON.parse(INSERT_);
-const ALLOWED = JSON.parse(ALLOWED_), DISALLOWED = JSON.parse(DISALLOWED_);
+const ALLOWED = JSON.parse(ALLOWED_);
 
 module.exports = {
+  ALLOWED,
   ITERATION,
   TTL,INSERT,
   GET_API_FUTURE_2,
-  ALLOWED,DISALLOWED,
   EXCHANGE,EXCHANGE2,
   BASE_URL,BASE_URL_2,
   GET_API_1,GET_API_2,
