@@ -3,7 +3,6 @@ const { Browser } = require('../class/browser/browser');
 const { WorkFlow } = require('../workflow');
 
 let cachedBrowser, cachedWorkflow;
-
 /**
  * Initialize and cache Browser + WorkFlow instances.
  * Returns { browser, workflow }.

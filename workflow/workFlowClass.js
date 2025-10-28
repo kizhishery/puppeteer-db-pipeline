@@ -1,5 +1,5 @@
 // class/workFlow.js
-const { WorkFlowUtils } = require('./workFlowUtilsClass');
+const { WorkFlowUtils } = require("./workFlowUtilsClass");
 
 class WorkFlow {
   static instance = null;
@@ -28,7 +28,7 @@ class WorkFlow {
   async error(err) {
     const { message, stack } = err;
     console.error({
-      origin : "./workflow/workFlowClass.js",
+      origin: "./workflow/workFlowClass.js",
       status: "❌ Workflow Failed",
       message,
       stack,
@@ -38,6 +38,11 @@ class WorkFlow {
       // Graceful cleanup
       await this.utils.closeAll();
       console.log("☠️ All pages closed");
+
+      const { pages } = this.utils;
+      
+      pages.pageExchange_1 = null;
+      pages.pageExchange_2 = null;
 
       if (this.utils.browser) {
         await this.utils.browser.closeBrowser();
@@ -76,9 +81,9 @@ class WorkFlow {
       console.time("🌐 DB Insertion");
       await this.utils.insertIntoDB();
       console.timeEnd("🌐 DB Insertion");
-      debugger
+      debugger;
     } catch (err) {
-      debugger
+      debugger;
       await this.error(err); // ✅ centralized call
     } finally {
       console.timeEnd("🌐 Total Workflow");
@@ -103,9 +108,9 @@ class WorkFlow {
       console.time("🌐 DB Insertion");
       await this.utils.insertIntoDB();
       console.timeEnd("🌐 DB Insertion");
-      debugger
+      debugger;
     } catch (err) {
-      debugger
+      debugger;
       await this.error(err); // ✅ reuse centralized handler
     } finally {
       console.timeEnd("🌐 Total Workflow (Cached)");
@@ -119,7 +124,10 @@ class WorkFlow {
 
   _injectPages() {
     if (!this._isLambda()) {
-      const { page1: pageExchange_1, page2: pageExchange2_1 } = require('../data');
+      const {
+        page1: pageExchange_1,
+        page2: pageExchange2_1,
+      } = require("../data");
       const { pages } = this.utils;
       Object.assign(pages, { pageExchange_1, pageExchange2_1 });
     }
